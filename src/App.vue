@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
+import type { Musician } from "./types";
 </script>
 
 <template>
@@ -14,7 +15,7 @@ import { defineComponent } from "vue";
 			</RouterLink>
 		</header>
 		<div>
-			<RouterView />
+			<RouterView :musicians="musicians" />
 		</div>
 	</div>
 </template>
@@ -24,6 +25,10 @@ export default defineComponent({
 	data() {
 		return {
 			dropdownShow: false,
+			musicians: [
+				{ id: "1", name: "Albin", instruments: ["guitar"] },
+				{ id: "2", name: "Butter", instruments: ["guitar", "drums"] },
+			] as Musician[],
 		};
 	},
 });

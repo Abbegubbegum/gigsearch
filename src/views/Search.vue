@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, type PropType } from "vue";
 import SearchBar from "../components/SearchBar.vue";
+import type { Musician } from "../types";
+import SearchItem from "../components/SearchItem.vue";
 </script>
 
 <template>
@@ -13,10 +15,16 @@ import SearchBar from "../components/SearchBar.vue";
 				@submit="handleSearch"
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
+				@transitionend="transitionOver = true"
 			/>
 		</div>
-		<aside></aside>
-		<main></main>
+		<aside v-show="transitionOver"></aside>
+		<main v-show="transitionOver">
+			<SearchItem
+				v-for="musician in filteredMusicians"
+				:musician="musician"
+			/>
+		</main>
 	</div>
 </template>
 
@@ -27,14 +35,27 @@ export default defineComponent({
 			initialSearch: true,
 			search: "",
 			transitionOver: false,
+			filteredMusicians: [] as Musician[],
 		};
 	},
 	methods: {
 		handleSearch(value: string) {
 			this.initialSearch = false;
 			this.search = value;
+
+			this.filteredMusicians = this.musicians.filter((musician) =>
+				musician.instruments.find((instrument) =>
+					instrument.includes(this.search)
+				)
+			);
+
 			console.log(this.search);
+			console.log(this.musicians);
+			console.log(this.filteredMusicians);
 		},
+	},
+	props: {
+		musicians: { type: Array<Musician>, required: true },
 	},
 });
 </script>
@@ -63,7 +84,7 @@ export default defineComponent({
 	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1fr 3fr;
 	grid-template-rows: 1fr 11fr;
 }
 
@@ -72,6 +93,11 @@ aside {
 }
 
 main {
+	display: flex;
+	flex-direction: column;
 	grid-row-start: 2;
+	padding: 3rem;
+	align-items: center;
+	gap: 2rem;
 }
 </style>
