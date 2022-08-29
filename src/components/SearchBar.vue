@@ -24,7 +24,7 @@ export default defineComponent({
 	methods: {
 		submit() {
 			if (this.value !== "") {
-				this.$emit("onSubmit", this.value);
+				this.$emit("submit", this.value);
 			}
 		},
 	},
@@ -38,6 +38,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+div {
+	display: flex;
+	align-items: center;
+}
+
 .search-bar,
 .submit-btn {
 	font-size: 1.5rem;
@@ -49,6 +54,7 @@ export default defineComponent({
 	height: 3rem;
 	width: 30rem;
 	box-shadow: 5px 5px 5px grey;
+	border: 2px solid black;
 }
 
 .submit-btn {
