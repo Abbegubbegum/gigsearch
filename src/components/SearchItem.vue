@@ -5,17 +5,17 @@
 				<div class="name-container">
 					<img
 						:src="
-							'/src/assets/icons/' +
-							musician.instruments[0].iconName
+							'/src/assets/icons/' + user.instruments[0].iconName
 						"
 						alt="Instrument Icon"
-						height="40"
+						height="30"
 					/>
-					{{ musician.name }}
+					<span class="name">{{ user.name }}</span>
 				</div>
-				<div class="rating-container">
+				<div class="experience-container">
+					Experience:
 					<star-rating
-						v-model:rating="musician.rating"
+						v-model:rating="user.experienceRating"
 						:increment="0.01"
 						:read-only="true"
 						:show-rating="false"
@@ -23,49 +23,50 @@
 					/>
 				</div>
 			</div>
-			<div class="location-container">
-				<img
-					src="../assets/icons/map-pin.svg"
-					alt="Map pin icon"
-					width="30"
-				/>
+			<div class="header-end-container">
+				<div class="location-container">
+					<img
+						src="../assets/icons/map-pin.svg"
+						alt="Map pin icon"
+						width="25"
+					/>
+					<span class="location-text">{{ user.location }}</span>
+				</div>
+				<div class="likes-container">{{ user.likes }}👍</div>
 			</div>
 		</div>
 		<div class="item-main">
 			<div class="lists-container">
 				<ul class="instuments-container">
 					<li
-						v-for="instrument in musician.instruments"
+						v-for="instrument in user.instruments"
 						class="instrument"
 					>
 						{{ capitalize(instrument.name) }}
 					</li>
 				</ul>
 				<ul class="styles-container">
-					<li
-						v-for="instrument in musician.instruments"
-						class="instrument"
-					>
-						{{ capitalize(instrument.name) }}
+					<li v-for="style in user.styles" class="style">
+						{{ capitalize(style) }}
 					</li>
 				</ul>
 			</div>
 			<div class="about-container">
-				<p></p>
+				<p>{{ user.about }}</p>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
-import type { Musician } from "@/types";
+import type { User } from "@/types";
 import { defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
 
 export default defineComponent({
 	props: {
-		musician: {
-			type: Object as PropType<Musician>,
+		user: {
+			type: Object as PropType<User>,
 			required: true,
 		},
 	},
@@ -85,24 +86,54 @@ export default defineComponent({
 	box-shadow: 5px 5px 5px;
 	border: 1px solid gray;
 	width: clamp(200px, 100%, 600px);
-	padding: 0.5rem;
 	display: grid;
-	grid-template-rows: 1fr 2fr;
+	grid-template-rows: auto;
 }
 
 .item-header {
 	display: flex;
+	padding: 0.5rem;
+
 	justify-content: space-between;
+	border-bottom: 1px solid gray;
 }
 
 .name-container {
+	display: flex;
+	align-items: center;
+}
+
+.name {
 	font-size: 2rem;
+	font-weight: bold;
+	margin-left: 0.5rem;
+}
+
+.header-end-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.location-container {
+	font-size: 1.5rem;
+	text-align: center;
+}
+
+.location-text {
+	margin: 0;
+	padding: 0;
+}
+
+.likes-container {
+	font-size: 1.5rem;
+	text-align: right;
 	font-weight: bold;
 }
 
 .item-main {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: auto 1fr;
 }
 
 .lists-container {
@@ -110,8 +141,17 @@ export default defineComponent({
 }
 
 ul {
-	list-style: none;
-	padding: 0;
-	margin: 0.3rem;
+	list-style: circle;
+	padding: 0 24px;
+	font-size: 1.5rem;
+	border-right: 1px solid gray;
+}
+
+li {
+	font-weight: 500;
+}
+
+.about-container {
+	padding: 0 1rem 1rem 1rem;
 }
 </style>

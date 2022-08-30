@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
-import type { Musician } from "./types";
+import type { User } from "./types";
 import json from "./assets/users.json";
 </script>
 
@@ -16,7 +16,7 @@ import json from "./assets/users.json";
 			</RouterLink>
 		</header>
 		<div>
-			<RouterView :musicians="musicians" />
+			<RouterView :users="users" />
 		</div>
 	</div>
 </template>
@@ -26,7 +26,7 @@ export default defineComponent({
 	data() {
 		return {
 			dropdownShow: false,
-			musicians: json as Musician[],
+			users: json as User[],
 		};
 	},
 });

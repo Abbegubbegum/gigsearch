@@ -3,15 +3,15 @@ import { defineComponent } from "vue";
 </script>
 
 <template>
-	<div>
+	<form @submit.prevent="submit">
 		<input
 			type="search"
 			class="search-bar"
 			:placeholder="placeholder"
 			v-model="value"
 		/>
-		<input type="submit" value="🔍" class="submit-btn" @click="submit" />
-	</div>
+		<input type="submit" value="🔍" class="submit-btn" />
+	</form>
 </template>
 
 <script lang="ts">

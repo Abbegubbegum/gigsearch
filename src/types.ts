@@ -1,7 +1,8 @@
-export interface Musician {
+export interface User {
 	id: string;
 	name: string;
-	rating: number;
+	likes: number;
+	experienceRating: number;
 	location: string;
 	instruments: Instrument[];
 	styles: string[];

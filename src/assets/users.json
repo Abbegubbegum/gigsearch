@@ -2,7 +2,8 @@
 	{
 		"id": "1",
 		"name": "Albin Norbäck",
-		"rating": 3.6,
+		"likes": 150,
+		"experienceRating": 3.2,
 		"location": "Stockholm",
 		"instruments": [
 			{
@@ -17,7 +18,8 @@
 	{
 		"id": "2",
 		"name": "Butters",
-		"rating": 2.3,
+		"likes": 200,
+		"experienceRating": 2,
 		"location": "New York",
 		"instruments": [
 			{
@@ -38,7 +40,8 @@
 		"id": "3",
 		"name": "Nunc vitae",
 		"location": "Rom",
-		"rating": 1,
+		"likes": 3,
+		"experienceRating": 0.5,
 		"instruments": [
 			{
 				"id": "3",
@@ -63,7 +66,8 @@
 		"id": "4",
 		"name": "Robin B",
 		"location": "Skåne",
-		"rating": 5,
+		"likes": 40,
+		"experienceRating": 5,
 		"instruments": [
 			{
 				"id": "2",

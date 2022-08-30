@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { defineComponent } from "vue";
 import SearchBar from "../components/SearchBar.vue";
-import type { Musician } from "../types";
+import type { User } from "../types";
 import SearchItem from "../components/SearchItem.vue";
 </script>
 
@@ -15,15 +15,11 @@ import SearchItem from "../components/SearchItem.vue";
 				@submit="handleSearch"
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
-				@transitionend="transitionOver = true"
 			/>
 		</div>
-		<aside v-show="transitionOver"></aside>
-		<main v-show="transitionOver">
-			<SearchItem
-				v-for="musician in filteredMusicians"
-				:musician="musician"
-			/>
+		<aside class="fadeTransition" :class="{ hide: initialSearch }"></aside>
+		<main class="fadeTransition" :class="{ hide: initialSearch }">
+			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
 	</div>
 </template>
@@ -35,7 +31,7 @@ export default defineComponent({
 			initialSearch: true,
 			search: "",
 			transitionOver: false,
-			filteredMusicians: [] as Musician[],
+			filteredUsers: [] as User[],
 		};
 	},
 	methods: {
@@ -43,21 +39,41 @@ export default defineComponent({
 			this.initialSearch = false;
 			this.search = value;
 
-			this.filteredMusicians = this.musicians.filter((musician) =>
-				musician.instruments.find((instrument) =>
+			this.filteredUsers = this.users.filter((user) =>
+				user.instruments.find((instrument) =>
 					instrument.name
 						.toLowerCase()
 						.includes(this.search.toLowerCase())
 				)
 			);
 
+			this.filteredUsers.sort((a, b): number => {
+				let aMainMatch = a.instruments[0].name
+					.toLowerCase()
+					.includes(this.search.toLowerCase());
+				let bMainMatch = b.instruments[0].name
+					.toLowerCase()
+					.includes(this.search.toLowerCase());
+				if (
+					(aMainMatch && bMainMatch) ||
+					(!aMainMatch && !bMainMatch)
+				) {
+					return 0;
+				} else if (aMainMatch) {
+					return -1;
+				} else if (bMainMatch) {
+					return 1;
+				}
+				return 0;
+			});
+
 			console.log(this.search);
-			console.log(this.musicians);
-			console.log(this.filteredMusicians);
+			console.log(this.users);
+			console.log(this.filteredUsers);
 		},
 	},
 	props: {
-		musicians: { type: Array<Musician>, required: true },
+		users: { type: Array<User>, required: true },
 	},
 });
 </script>
@@ -82,12 +98,20 @@ export default defineComponent({
 	z-index: 99999;
 }
 
+.fadeTransition {
+	transition: opacity 0.4s linear 0.6s;
+}
+
+.hide {
+	opacity: 0;
+}
+
 .content-container {
 	height: 100%;
 	width: 100%;
 	display: grid;
 	grid-template-columns: 1fr 3fr;
-	grid-template-rows: 1fr 11fr;
+	grid-template-rows: 10vh 1fr;
 }
 
 aside {
