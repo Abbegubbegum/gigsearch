@@ -45,7 +45,9 @@ export default defineComponent({
 
 			this.filteredMusicians = this.musicians.filter((musician) =>
 				musician.instruments.find((instrument) =>
-					instrument.includes(this.search)
+					instrument.name
+						.toLowerCase()
+						.includes(this.search.toLowerCase())
 				)
 			);
 

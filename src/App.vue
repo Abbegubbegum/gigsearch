@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
 import type { Musician } from "./types";
+import json from "./assets/users.json";
 </script>
 
 <template>
@@ -25,10 +26,7 @@ export default defineComponent({
 	data() {
 		return {
 			dropdownShow: false,
-			musicians: [
-				{ id: "1", name: "Albin", instruments: ["guitar"] },
-				{ id: "2", name: "Butter", instruments: ["guitar", "drums"] },
-			] as Musician[],
+			musicians: json as Musician[],
 		};
 	},
 });

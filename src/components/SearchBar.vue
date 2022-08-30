@@ -31,7 +31,7 @@ export default defineComponent({
 	props: {
 		placeholder: {
 			type: String,
-			default: "What musician would you like?",
+			default: "What instrument would you like?",
 		},
 	},
 });

@@ -1,0 +1,82 @@
+[
+	{
+		"id": "1",
+		"name": "Albin Norbäck",
+		"rating": 3.6,
+		"location": "Stockholm",
+		"instruments": [
+			{
+				"id": "1",
+				"name": "Guitar",
+				"iconName": "guitar.svg"
+			}
+		],
+		"styles": ["Jazz", "R&b"],
+		"about": "Suspendisse sed eleifend massa. Sed molestie justo nisl, ut efficitur purus commodo at. Integer semper ligula sed est elementum, at dignissim dolor consequat. Curabitur faucibus vel massa non hendrerit. Nunc condimentum sollicitudin nisi ut molestie. Nam faucibus, felis in pharetra scelerisque, dui justo convallis mi, eu cursus quam metus quis."
+	},
+	{
+		"id": "2",
+		"name": "Butters",
+		"rating": 2.3,
+		"location": "New York",
+		"instruments": [
+			{
+				"id": "2",
+				"name": "Drums",
+				"iconName": "drums.svg"
+			},
+			{
+				"id": "1",
+				"name": "Guitar",
+				"iconName": "guitar.svg"
+			}
+		],
+		"styles": ["Dance"],
+		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
+	},
+	{
+		"id": "3",
+		"name": "Nunc vitae",
+		"location": "Rom",
+		"rating": 1,
+		"instruments": [
+			{
+				"id": "3",
+				"name": "Piano",
+				"iconName": "piano.svg"
+			},
+			{
+				"id": "1",
+				"name": "Guitar",
+				"iconName": "guitar.svg"
+			},
+			{
+				"id": "2",
+				"name": "Drums",
+				"iconName": "drums.svg"
+			}
+		],
+		"styles": ["Rock", "Jazz", "Metal"],
+		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
+	},
+	{
+		"id": "4",
+		"name": "Robin B",
+		"location": "Skåne",
+		"rating": 5,
+		"instruments": [
+			{
+				"id": "2",
+				"name": "Drums",
+				"iconName": "drums.svg"
+			},
+			{
+				"id": "3",
+				"name": "Piano",
+				"iconName": "piano.svg"
+			}
+		],
+		"styles": ["Bossa Nova", "Tango", "Dance"],
+		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
+	}
+]
