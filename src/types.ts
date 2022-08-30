@@ -4,13 +4,13 @@ export interface User {
 	likes: number;
 	experienceRating: number;
 	location: string;
-	instruments: Instrument[];
+	instruments: number[];
 	styles: string[];
 	about: string;
 }
 
 export interface Instrument {
-	id: string;
+	id: number;
 	name: string;
 	iconName: string;
 }

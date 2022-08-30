@@ -24,7 +24,7 @@ export default defineComponent({
 	methods: {
 		submit() {
 			if (this.value !== "") {
-				this.$emit("submit", this.value);
+				this.$emit("onSubmit", this.value);
 			}
 		},
 	},

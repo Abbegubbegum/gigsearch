@@ -1,0 +1,17 @@
+[
+	{
+		"id": 0,
+		"name": "Guitar",
+		"iconName": "guitar.svg"
+	},
+	{
+		"id": 1,
+		"name": "Drums",
+		"iconName": "drums.svg"
+	},
+	{
+		"id": 2,
+		"name": "Piano",
+		"iconName": "piano.svg"
+	}
+]

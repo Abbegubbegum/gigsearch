@@ -5,13 +5,7 @@
 		"likes": 150,
 		"experienceRating": 3.2,
 		"location": "Stockholm",
-		"instruments": [
-			{
-				"id": "1",
-				"name": "Guitar",
-				"iconName": "guitar.svg"
-			}
-		],
+		"instruments": [0],
 		"styles": ["Jazz", "R&b"],
 		"about": "Suspendisse sed eleifend massa. Sed molestie justo nisl, ut efficitur purus commodo at. Integer semper ligula sed est elementum, at dignissim dolor consequat. Curabitur faucibus vel massa non hendrerit. Nunc condimentum sollicitudin nisi ut molestie. Nam faucibus, felis in pharetra scelerisque, dui justo convallis mi, eu cursus quam metus quis."
 	},
@@ -21,18 +15,7 @@
 		"likes": 200,
 		"experienceRating": 2,
 		"location": "New York",
-		"instruments": [
-			{
-				"id": "2",
-				"name": "Drums",
-				"iconName": "drums.svg"
-			},
-			{
-				"id": "1",
-				"name": "Guitar",
-				"iconName": "guitar.svg"
-			}
-		],
+		"instruments": [1, 0],
 		"styles": ["Dance"],
 		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
 	},
@@ -42,23 +25,7 @@
 		"location": "Rom",
 		"likes": 3,
 		"experienceRating": 0.5,
-		"instruments": [
-			{
-				"id": "3",
-				"name": "Piano",
-				"iconName": "piano.svg"
-			},
-			{
-				"id": "1",
-				"name": "Guitar",
-				"iconName": "guitar.svg"
-			},
-			{
-				"id": "2",
-				"name": "Drums",
-				"iconName": "drums.svg"
-			}
-		],
+		"instruments": [2],
 		"styles": ["Rock", "Jazz", "Metal"],
 		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
 	},
@@ -68,18 +35,7 @@
 		"location": "Skåne",
 		"likes": 40,
 		"experienceRating": 5,
-		"instruments": [
-			{
-				"id": "2",
-				"name": "Drums",
-				"iconName": "drums.svg"
-			},
-			{
-				"id": "3",
-				"name": "Piano",
-				"iconName": "piano.svg"
-			}
-		],
+		"instruments": [2, 0, 1],
 		"styles": ["Bossa Nova", "Tango", "Dance"],
 		"about": "Suspendisse potenti. Donec tellus neque, faucibus nec ante luctus, commodo gravida ante. Nam id tellus non eros sagittis bibendum et at lectus. Cras convallis ex arcu, sit amet venenatis neque vulputate vitae. Duis quis erat vitae mi viverra tincidunt et nec nisl. Morbi maximus tortor efficitur, sodales velit at, condimentum."
 	}

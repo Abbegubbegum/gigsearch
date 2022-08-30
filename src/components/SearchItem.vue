@@ -5,7 +5,8 @@
 				<div class="name-container">
 					<img
 						:src="
-							'/src/assets/icons/' + user.instruments[0].iconName
+							'/src/assets/icons/' +
+							instruments[user.instruments[0]].iconName
 						"
 						alt="Instrument Icon"
 						height="30"
@@ -39,10 +40,10 @@
 			<div class="lists-container">
 				<ul class="instuments-container">
 					<li
-						v-for="instrument in user.instruments"
+						v-for="instrumentID in user.instruments"
 						class="instrument"
 					>
-						{{ capitalize(instrument.name) }}
+						{{ capitalize(instruments[instrumentID].name) }}
 					</li>
 				</ul>
 				<ul class="styles-container">
@@ -59,8 +60,8 @@
 </template>
 
 <script lang="ts">
-import type { User } from "@/types";
-import { defineComponent, type PropType } from "vue";
+import type { Instrument, User } from "@/types";
+import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
 
 export default defineComponent({
@@ -69,6 +70,7 @@ export default defineComponent({
 			type: Object as PropType<User>,
 			required: true,
 		},
+		instruments: { type: Array<Instrument>, required: true },
 	},
 	methods: {
 		capitalize(val: string): string {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
-import type { User } from "./types";
-import json from "./assets/users.json";
+import type { User, Instrument } from "./types";
+import users from "./assets/users.json";
+import instruments from "./assets/instruments.json";
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import json from "./assets/users.json";
 			</RouterLink>
 		</header>
 		<div>
-			<RouterView :users="users" />
+			<RouterView :users="users" :instruments="instruments" />
 		</div>
 	</div>
 </template>
@@ -26,7 +27,8 @@ export default defineComponent({
 	data() {
 		return {
 			dropdownShow: false,
-			users: json as User[],
+			users: users as User[],
+			instruments: instruments as Instrument[],
 		};
 	},
 });

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineComponent } from "vue";
 import SearchBar from "../components/SearchBar.vue";
-import type { User } from "../types";
+import type { Instrument, User } from "../types";
 import SearchItem from "../components/SearchItem.vue";
 </script>
 
@@ -12,14 +12,18 @@ import SearchItem from "../components/SearchItem.vue";
 			:class="{ initialSearch: initialSearch }"
 		>
 			<SearchBar
-				@submit="handleSearch"
+				@on-submit="handleSearch"
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
 			/>
 		</div>
 		<aside class="fadeTransition" :class="{ hide: initialSearch }"></aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
-			<SearchItem v-for="user in filteredUsers" :user="user" />
+			<SearchItem
+				v-for="user in filteredUsers"
+				:user="user"
+				:instruments="instruments"
+			/>
 		</main>
 	</div>
 </template>
@@ -32,6 +36,7 @@ export default defineComponent({
 			search: "",
 			transitionOver: false,
 			filteredUsers: [] as User[],
+			filteredInstruments: [] as Instrument[],
 		};
 	},
 	methods: {
@@ -39,21 +44,30 @@ export default defineComponent({
 			this.initialSearch = false;
 			this.search = value;
 
-			this.filteredUsers = this.users.filter((user) =>
-				user.instruments.find((instrument) =>
-					instrument.name
-						.toLowerCase()
-						.includes(this.search.toLowerCase())
-				)
+			this.filteredInstruments = this.instruments.filter((instrument) => {
+				return instrument.name
+					.toLowerCase()
+					.includes(this.search.toLowerCase());
+			});
+
+			this.filteredUsers = this.users.filter(
+				(user) =>
+					user.instruments.find(
+						(instrumentID) =>
+							this.filteredInstruments.find(
+								(instrument) => instrument.id === instrumentID
+							) !== undefined
+					) !== undefined
 			);
 
 			this.filteredUsers.sort((a, b): number => {
-				let aMainMatch = a.instruments[0].name
-					.toLowerCase()
-					.includes(this.search.toLowerCase());
-				let bMainMatch = b.instruments[0].name
-					.toLowerCase()
-					.includes(this.search.toLowerCase());
+				let aMainMatch = this.filteredInstruments.find(
+					(instrument) => instrument.id === a.instruments[0]
+				);
+				let bMainMatch = this.filteredInstruments.find(
+					(instrument) => instrument.id === b.instruments[0]
+				);
+
 				if (
 					(aMainMatch && bMainMatch) ||
 					(!aMainMatch && !bMainMatch)
@@ -68,12 +82,13 @@ export default defineComponent({
 			});
 
 			console.log(this.search);
-			console.log(this.users);
+			console.log(this.filteredInstruments);
 			console.log(this.filteredUsers);
 		},
 	},
 	props: {
 		users: { type: Array<User>, required: true },
+		instruments: { type: Array<Instrument>, required: true },
 	},
 });
 </script>
