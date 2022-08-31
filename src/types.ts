@@ -14,3 +14,7 @@ export interface Instrument {
 	name: string;
 	iconName: string;
 }
+
+export interface FilterOptions {
+	styles?: string[];
+}

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { defineComponent } from "vue";
 import SearchBar from "../components/SearchBar.vue";
-import type { Instrument, User } from "../types";
+import type { FilterOptions, Instrument, User } from "../types";
 import SearchItem from "../components/SearchItem.vue";
 import { data } from "../main";
 import router from "@/router";
+import FilterSection from "../components/FilterSection.vue";
 </script>
 
 <template>
@@ -21,7 +22,12 @@ import router from "@/router";
 				:class="{ initialSearch: initialSearch }"
 			/>
 		</div>
-		<aside class="fadeTransition" :class="{ hide: initialSearch }"></aside>
+		<aside class="fadeTransition" :class="{ hide: initialSearch }">
+			<FilterSection
+				:filter-options="availableFilterOptions"
+				@filter-changed="handleChangedFilter"
+			/>
+		</aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
 			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
@@ -32,12 +38,27 @@ import router from "@/router";
 export default defineComponent({
 	data() {
 		return {
+			//For styling
 			initialSearch: true,
+			//The current search
 			search: "",
+			//The value of the search bar
 			searchBarValue: "",
-			transitionOver: false,
+			//Users matching the search
+			searchedUsers: [] as User[],
+			//Users matching both the search and the filter
 			filteredUsers: [] as User[],
-			filteredInstruments: [] as Instrument[],
+			//Instruments matching the search
+			searchedInstruments: [] as Instrument[],
+			//The filter options that are displayed in the filter section
+			availableFilterOptions: {
+				styles: [],
+			} as FilterOptions,
+			//Current filter on the users
+			currentFilter: {
+				styles: [],
+			} as FilterOptions,
+			//Raw json data
 			data,
 		};
 	},
@@ -45,29 +66,21 @@ export default defineComponent({
 		handleSearch() {
 			this.initialSearch = false;
 			this.search = this.searchBarValue;
+			//Empties filter options
+			this.availableFilterOptions.styles = [];
+			//Updates params
 			router.push(/search/ + this.search);
 
-			this.filteredInstruments = data.instruments.filter((instrument) => {
-				return instrument.name
-					.toLowerCase()
-					.includes(this.search.toLowerCase());
-			});
+			this.createFilteredDataBySearch();
 
-			this.filteredUsers = data.users.filter(
-				(user) =>
-					user.instruments.find(
-						(instrumentID) =>
-							this.filteredInstruments.find(
-								(instrument) => instrument.id === instrumentID
-							) !== undefined
-					) !== undefined
-			);
+			this.applyFilter();
 
+			//Sort by relevant main instruments first
 			this.filteredUsers.sort((a, b): number => {
-				let aMainMatch = this.filteredInstruments.find(
+				let aMainMatch = this.searchedInstruments.find(
 					(instrument) => instrument.id === a.instruments[0]
 				);
-				let bMainMatch = this.filteredInstruments.find(
+				let bMainMatch = this.searchedInstruments.find(
 					(instrument) => instrument.id === b.instruments[0]
 				);
 
@@ -84,10 +97,67 @@ export default defineComponent({
 				return 0;
 			});
 
-			console.log(this.search);
-			console.log(this.filteredInstruments);
-			console.log(this.filteredUsers);
+			// console.log(this.availableFilterOptions);
+			// console.log(this.search);
+			// console.log(this.searchedInstruments);
+			// console.log(this.filteredUsers);
 		},
+
+		//Populates all relevant data from initial search
+		createFilteredDataBySearch() {
+			//Create searched instruments list
+			this.searchedInstruments = data.instruments.filter((instrument) => {
+				return instrument.name
+					.toLowerCase()
+					.includes(this.search.toLowerCase());
+			});
+
+			//Filter users to only contain users who has the searched instruments
+			this.searchedUsers = data.users.filter(
+				(user) =>
+					user.instruments.find(
+						(instrumentID) =>
+							this.searchedInstruments.find(
+								(instrument) => instrument.id === instrumentID
+							) !== undefined
+					) !== undefined
+			);
+
+			//Populate available filter options
+			this.searchedUsers.forEach((user) => {
+				user.styles.forEach((style) => {
+					if (
+						!this.availableFilterOptions.styles?.find(
+							(existingStyle) => existingStyle === style
+						)
+					) {
+						this.availableFilterOptions.styles?.push(style);
+					}
+				});
+			});
+		},
+
+		//Apply current filter
+		applyFilter() {
+			//Copy the searched users
+			this.filteredUsers = [...this.searchedUsers];
+
+			//If styles filter is active
+			if (
+				this.currentFilter.styles &&
+				this.currentFilter.styles.length > 0
+			) {
+				this.filteredUsers = this.filteredUsers.filter((user) =>
+					user.styles.find((style) =>
+						this.currentFilter.styles?.find(
+							(filterStyle) => filterStyle === style
+						)
+					)
+				);
+			}
+		},
+
+		//Handle the params
 		handleParams() {
 			if (this.$route.params.search === undefined) return;
 			if (this.$route.params.search.length > 0) {
@@ -97,6 +167,11 @@ export default defineComponent({
 				this.searchBarValue = "";
 				this.initialSearch = true;
 			}
+		},
+
+		handleChangedFilter(newFilter: FilterOptions) {
+			this.currentFilter = newFilter;
+			this.applyFilter();
 		},
 	},
 	created() {
@@ -137,7 +212,7 @@ export default defineComponent({
 
 .hide {
 	opacity: 0;
-	transition: opacity 0.4s linear 0s;
+	transition: opacity 0.2s linear 0s;
 }
 
 .content-container {
