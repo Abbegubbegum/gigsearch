@@ -78,9 +78,7 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		capitalize(val: string): string {
-			return val.charAt(0).toUpperCase() + val.slice(1);
-		},
+		capitalize,
 	},
 	components: {
 		StarRating,
@@ -88,7 +86,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .item-container {
 	box-shadow: 5px 5px 5px;
 	border: 1px solid gray;

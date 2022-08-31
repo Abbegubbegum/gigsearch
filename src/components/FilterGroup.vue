@@ -1,21 +1,21 @@
 <script lang="ts" setup>
-import { defineComponent } from "vue";
+import { defineComponent, capitalize } from "vue";
 </script>
 
 <template>
-	<div class="group-header">
-		{{ filterCategory }}
-	</div>
-	<div class="button-group">
-		<div class="option-button" v-for="option in filterOptions">
-			<label>
-				{{ option }}
-				<input
-					type="checkbox"
-					:value="option"
-					v-model="checkedOptions"
-				/>
-			</label>
+	<div class="group-container">
+		<div class="group-header">{{ capitalize(filterCategory) }}:</div>
+		<div class="button-group">
+			<div class="option-button" v-for="option in filterOptions">
+				<label>
+					{{ option }}
+					<input
+						type="checkbox"
+						:value="option"
+						v-model="checkedOptions"
+					/>
+				</label>
+			</div>
 		</div>
 	</div>
 </template>
@@ -43,6 +43,7 @@ export default defineComponent({
 				[this.filterCategory]: this.checkedOptions,
 			});
 		},
+		capitalize,
 	},
 	watch: {
 		checkedOptions(to, from) {
@@ -52,4 +53,14 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style scoped>
+.group-container {
+	display: grid;
+	grid-template-rows: auto 1fr;
+}
+
+.button-group {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+</style>

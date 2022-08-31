@@ -6,6 +6,7 @@ import type { FilterOptions } from "@/types";
 
 <template>
 	<div>
+		<span class="filter-title">Filter By:</span>
 		<FilterGroup
 			filter-category="styles"
 			:filter-options="filterOptions.styles"
@@ -40,4 +41,12 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style scoped>
+div {
+	border: 1px solid grey;
+}
+.filter-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+</style>
