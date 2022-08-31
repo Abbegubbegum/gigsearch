@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar.vue";
 import type { Instrument, User } from "../types";
 import SearchItem from "../components/SearchItem.vue";
 import { data } from "../main";
+import router from "@/router";
 </script>
 
 <template>
@@ -14,16 +15,15 @@ import { data } from "../main";
 		>
 			<SearchBar
 				@on-submit="handleSearch"
+				:value="searchBarValue"
+				@on-input="(val: string) => {searchBarValue = val;}"
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
 			/>
 		</div>
 		<aside class="fadeTransition" :class="{ hide: initialSearch }"></aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
-			<SearchItem
-				v-for="user in filteredUsers"
-				:user="user"
-			/>
+			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
 	</div>
 </template>
@@ -34,6 +34,7 @@ export default defineComponent({
 		return {
 			initialSearch: true,
 			search: "",
+			searchBarValue: "",
 			transitionOver: false,
 			filteredUsers: [] as User[],
 			filteredInstruments: [] as Instrument[],
@@ -41,9 +42,10 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		handleSearch(value: string) {
+		handleSearch() {
 			this.initialSearch = false;
-			this.search = value;
+			this.search = this.searchBarValue;
+			router.push(/search/ + this.search);
 
 			this.filteredInstruments = data.instruments.filter((instrument) => {
 				return instrument.name
@@ -86,6 +88,24 @@ export default defineComponent({
 			console.log(this.filteredInstruments);
 			console.log(this.filteredUsers);
 		},
+		handleParams() {
+			if (this.$route.params.search === undefined) return;
+			if (this.$route.params.search.length > 0) {
+				this.searchBarValue = this.$route.params.search.toString();
+				this.handleSearch();
+			} else {
+				this.searchBarValue = "";
+				this.initialSearch = true;
+			}
+		},
+	},
+	created() {
+		this.handleParams();
+	},
+	watch: {
+		$route(to, from) {
+			this.handleParams();
+		},
 	},
 });
 </script>
@@ -111,11 +131,13 @@ export default defineComponent({
 }
 
 .fadeTransition {
+	opacity: 1;
 	transition: opacity 0.4s linear 0.6s;
 }
 
 .hide {
 	opacity: 0;
+	transition: opacity 0.4s linear 0s;
 }
 
 .content-container {

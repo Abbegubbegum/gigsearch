@@ -8,7 +8,8 @@ import { defineComponent } from "vue";
 			type="search"
 			class="search-bar"
 			:placeholder="placeholder"
-			v-model="value"
+			v-model="content"
+			@input="handleInput"
 		/>
 		<input type="submit" value="🔍" class="submit-btn" />
 	</form>
@@ -18,20 +19,31 @@ import { defineComponent } from "vue";
 export default defineComponent({
 	data() {
 		return {
-			value: "",
+			content: this.value || "",
 		};
 	},
 	methods: {
 		submit() {
-			if (this.value !== "") {
-				this.$emit("onSubmit", this.value);
+			if (this.content !== "") {
+				this.$emit("onSubmit");
 			}
+		},
+		handleInput() {
+			this.$emit("onInput", this.content);
 		},
 	},
 	props: {
 		placeholder: {
 			type: String,
 			default: "What instrument would you like?",
+		},
+		value: {
+			type: String,
+		},
+	},
+	watch: {
+		value: function (to, from) {
+			this.content = to;
 		},
 	},
 });

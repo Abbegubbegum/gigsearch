@@ -9,7 +9,11 @@ import { defineComponent } from "vue";
 			<RouterLink to="/" class="home-btn link"
 				>GIG<span class="logo-color">search</span>
 			</RouterLink>
-			<RouterLink to="/Search" class="link" @click="dropdownShow = false">
+			<RouterLink
+				to="/search/"
+				class="link"
+				@click="dropdownShow = false"
+			>
 				Search
 			</RouterLink>
 		</header>
