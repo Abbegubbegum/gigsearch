@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
-import type { User, Instrument } from "./types";
-import users from "./assets/users.json";
-import instruments from "./assets/instruments.json";
 </script>
 
 <template>
@@ -17,7 +14,7 @@ import instruments from "./assets/instruments.json";
 			</RouterLink>
 		</header>
 		<div>
-			<RouterView :users="users" :instruments="instruments" />
+			<RouterView />
 		</div>
 	</div>
 </template>
@@ -27,8 +24,6 @@ export default defineComponent({
 	data() {
 		return {
 			dropdownShow: false,
-			users: users as User[],
-			instruments: instruments as Instrument[],
 		};
 	},
 });

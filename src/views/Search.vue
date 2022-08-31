@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import SearchBar from "../components/SearchBar.vue";
 import type { Instrument, User } from "../types";
 import SearchItem from "../components/SearchItem.vue";
+import { data } from "../main";
 </script>
 
 <template>
@@ -22,7 +23,6 @@ import SearchItem from "../components/SearchItem.vue";
 			<SearchItem
 				v-for="user in filteredUsers"
 				:user="user"
-				:instruments="instruments"
 			/>
 		</main>
 	</div>
@@ -37,6 +37,7 @@ export default defineComponent({
 			transitionOver: false,
 			filteredUsers: [] as User[],
 			filteredInstruments: [] as Instrument[],
+			data,
 		};
 	},
 	methods: {
@@ -44,13 +45,13 @@ export default defineComponent({
 			this.initialSearch = false;
 			this.search = value;
 
-			this.filteredInstruments = this.instruments.filter((instrument) => {
+			this.filteredInstruments = data.instruments.filter((instrument) => {
 				return instrument.name
 					.toLowerCase()
 					.includes(this.search.toLowerCase());
 			});
 
-			this.filteredUsers = this.users.filter(
+			this.filteredUsers = data.users.filter(
 				(user) =>
 					user.instruments.find(
 						(instrumentID) =>
@@ -85,10 +86,6 @@ export default defineComponent({
 			console.log(this.filteredInstruments);
 			console.log(this.filteredUsers);
 		},
-	},
-	props: {
-		users: { type: Array<User>, required: true },
-		instruments: { type: Array<Instrument>, required: true },
 	},
 });
 </script>

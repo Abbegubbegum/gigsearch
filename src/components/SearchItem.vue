@@ -6,7 +6,7 @@
 					<img
 						:src="
 							'/src/assets/icons/' +
-							instruments[user.instruments[0]].iconName
+							data.instruments[user.instruments[0]].iconName
 						"
 						alt="Instrument Icon"
 						height="30"
@@ -14,7 +14,7 @@
 					<span class="name">{{ user.name }}</span>
 				</div>
 				<div class="experience-container">
-					Experience:
+					Level:
 					<star-rating
 						v-model:rating="user.experienceRating"
 						:increment="0.01"
@@ -43,7 +43,7 @@
 						v-for="instrumentID in user.instruments"
 						class="instrument"
 					>
-						{{ capitalize(instruments[instrumentID].name) }}
+						{{ capitalize(data.instruments[instrumentID].name) }}
 					</li>
 				</ul>
 				<ul class="styles-container">
@@ -60,17 +60,22 @@
 </template>
 
 <script lang="ts">
-import type { Instrument, User } from "@/types";
+import type { User } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
+import { data } from "../main";
 
 export default defineComponent({
+	data() {
+		return {
+			data,
+		};
+	},
 	props: {
 		user: {
 			type: Object as PropType<User>,
 			required: true,
 		},
-		instruments: { type: Array<Instrument>, required: true },
 	},
 	methods: {
 		capitalize(val: string): string {
