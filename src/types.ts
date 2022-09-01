@@ -17,4 +17,6 @@ export interface Instrument {
 
 export interface FilterOptions {
 	styles?: string[];
+	locations?: string[];
+	mainInstrumentOnly?: boolean;
 }

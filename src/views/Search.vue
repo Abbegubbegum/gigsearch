@@ -30,7 +30,7 @@ import SortDropdown from "../components/SortDropdown.vue";
 			/>
 		</aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
-			<SortDropdown @selected="handleChangedSort" />
+			<SortDropdown @selected="handleChangedSort" class="sort-dropdown" />
 			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
 	</div>
@@ -55,10 +55,13 @@ export default defineComponent({
 			//The filter options that are displayed in the filter section
 			availableFilterOptions: {
 				styles: [],
+				locations: [],
 			} as FilterOptions,
 			//Current filter on the users
 			currentFilter: {
 				styles: [],
+				mainInstrumentOnly: false,
+				locations: [],
 			} as FilterOptions,
 			currentSort: "",
 			//Raw json data
@@ -78,6 +81,7 @@ export default defineComponent({
 
 			this.applyFilter();
 
+			this.sortUsers();
 			// console.log(this.availableFilterOptions);
 			// console.log(this.search);
 			// console.log(this.searchedInstruments);
@@ -115,6 +119,13 @@ export default defineComponent({
 						this.availableFilterOptions.styles?.push(style);
 					}
 				});
+				if (
+					!this.availableFilterOptions.locations?.find(
+						(existingLocation) => existingLocation === user.location
+					)
+				) {
+					this.availableFilterOptions.locations?.push(user.location);
+				}
 			});
 		},
 
@@ -133,6 +144,25 @@ export default defineComponent({
 						this.currentFilter.styles?.find(
 							(filterStyle) => filterStyle === style
 						)
+					)
+				);
+			}
+
+			if (this.currentFilter.mainInstrumentOnly) {
+				this.filteredUsers = this.filteredUsers.filter((user) =>
+					this.searchedInstruments.find(
+						(instrument) => instrument.id === user.instruments[0]
+					)
+				);
+			}
+
+			if (
+				this.currentFilter.locations &&
+				this.currentFilter.locations.length > 0
+			) {
+				this.filteredUsers = this.filteredUsers.filter((user) =>
+					this.currentFilter.locations?.find(
+						(filterLocation) => filterLocation === user.location
 					)
 				);
 			}
@@ -165,6 +195,10 @@ export default defineComponent({
 				this.filteredUsers.sort((a, b): number => {
 					return b.likes - a.likes;
 				});
+			} else if (this.currentSort === "level") {
+				this.filteredUsers.sort((a, b): number => {
+					return b.experienceRating - a.experienceRating;
+				});
 			}
 		},
 
@@ -183,6 +217,7 @@ export default defineComponent({
 		handleChangedFilter(newFilter: FilterOptions) {
 			this.currentFilter = newFilter;
 			this.applyFilter();
+			this.sortUsers();
 		},
 
 		handleChangedSort(newSort: string) {
@@ -231,11 +266,6 @@ export default defineComponent({
 	transition: opacity 0.2s linear 0s;
 }
 
-aside {
-	position: sticky;
-	top: 20px;
-}
-
 .content-container {
 	height: 100%;
 	width: 100%;
@@ -245,6 +275,8 @@ aside {
 }
 
 aside {
+	position: sticky;
+	top: 20px;
 	grid-row-start: 2;
 }
 
@@ -252,8 +284,12 @@ main {
 	display: flex;
 	flex-direction: column;
 	grid-row-start: 2;
-	padding: 3rem;
+	padding: 0 3rem 3rem 3rem;
 	align-items: center;
 	gap: 2rem;
+}
+
+.sort-dropdown {
+	align-self: flex-end;
 }
 </style>

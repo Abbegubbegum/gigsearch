@@ -4,7 +4,7 @@ import { defineComponent, capitalize } from "vue";
 
 <template>
 	<div class="group-container">
-		<div class="group-header">{{ capitalize(filterCategory) }}:</div>
+		<div class="group-header">{{ capitalize(filterLabel) }}:</div>
 		<div class="button-group">
 			<div class="option-button" v-for="option in filterOptions">
 				<label>
@@ -28,19 +28,23 @@ export default defineComponent({
 		};
 	},
 	props: {
-		filterCategory: {
+		filterLabel: {
 			type: String,
 			required: true,
 		},
 		filterOptions: {
 			type: Array<String>,
 		},
+		objectKey: {
+			type: String,
+			required: true,
+		},
 	},
 	emits: ["filterChanged"],
 	methods: {
 		applyFilter() {
 			this.$emit("filterChanged", {
-				[this.filterCategory]: this.checkedOptions,
+				[this.objectKey]: this.checkedOptions,
 			});
 		},
 		capitalize,
@@ -53,9 +57,10 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
 .group-container {
 	display: grid;
+	width: 100%;
 	grid-template-rows: auto 1fr;
 	padding: 0.5rem;
 }

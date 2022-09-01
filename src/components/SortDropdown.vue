@@ -4,12 +4,15 @@ import { defineComponent, capitalize } from "vue";
 
 <template>
 	<div class="sort-dropdown">
-		<input
-			class="dropdown-input"
-			@focus="showOptions"
-			@blur="exitInput"
-			v-model="searchFilter"
-		/>
+		<label>
+			Sort by:
+			<input
+				class="dropdown-input"
+				@focus="showOptions"
+				@blur="exitInput"
+				v-model="searchFilter"
+			/>
+		</label>
 
 		<div class="dropdown-content" v-show="optionsShow">
 			<div
@@ -44,15 +47,15 @@ export default defineComponent({
 			if (this.selectedOption === "") {
 				this.searchFilter = "";
 			} else {
-				this.searchFilter = this.selectedOption;
+				this.searchFilter = capitalize(this.selectedOption);
 			}
 			this.$emit("selected", this.selectedOption);
 			this.optionsShow = false;
 		},
 		selectOption(option: string) {
-			this.selectedOption = capitalize(option);
+			this.selectedOption = option;
 			this.optionsShow = false;
-			this.searchFilter = this.selectedOption;
+			this.searchFilter = capitalize(this.selectedOption);
 			this.$emit("selected", this.selectedOption);
 		},
 	},
@@ -74,4 +77,34 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.sort-dropdown {
+	display: flex;
+	flex-direction: column;
+}
+label {
+	font-size: 1.3rem;
+}
+input {
+	font-size: 1.3rem;
+	height: 100%;
+	width: 5rem;
+	border: none;
+	box-shadow: 1px 1px 3px black;
+}
+
+.dropdown-content {
+	align-self: flex-end;
+	border: 1px solid gray;
+	box-shadow: 3px 3px 5px black;
+	position: absolute;
+	width: 100%;
+	top: 100%;
+}
+
+.dropdown-item {
+	position: relative;
+	padding: 0.5rem;
+	border-bottom: 1px solid gray;
+}
+</style>
