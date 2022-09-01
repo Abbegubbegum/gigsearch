@@ -13,5 +13,30 @@
 		"id": 2,
 		"name": "Piano",
 		"iconName": "piano.svg"
+	},
+	{
+		"id": 3,
+		"name": "Singer",
+		"iconName": "microphone.svg"
+	},
+	{
+		"id": 4,
+		"name": "Saxophone",
+		"iconName": "saxophone.svg"
+	},
+	{
+		"id": 5,
+		"name": "Trumpet",
+		"iconName": "trumpet.svg"
+	},
+	{
+		"id": 6,
+		"name": "Electric Bass",
+		"iconName": "bass.svg"
+	},
+	{
+		"id": 7,
+		"name": "Cello",
+		"iconName": "cello.svg"
 	}
 ]

@@ -9,7 +9,7 @@ import instruments from "./assets/instruments.json";
 import type { User, Instrument } from "./types";
 
 export const data = reactive({
-	users: users as User[],
+	users: users as unknown as User[],
 	instruments: instruments as Instrument[],
 });
 
