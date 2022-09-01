@@ -5,17 +5,11 @@ import { defineComponent } from "vue";
 
 <template>
 	<div class="content">
-		<header>
+		<header :class="{ hideheader: hideHeader }">
 			<RouterLink to="/" class="home-btn link"
 				>GIG<span class="logo-color">search</span>
 			</RouterLink>
-			<RouterLink
-				to="/search/"
-				class="link"
-				@click="dropdownShow = false"
-			>
-				Search
-			</RouterLink>
+			<RouterLink to="/search/" class="link"> Search </RouterLink>
 		</header>
 		<div>
 			<RouterView />
@@ -27,8 +21,24 @@ import { defineComponent } from "vue";
 export default defineComponent({
 	data() {
 		return {
-			dropdownShow: false,
+			hideHeader: false,
+			lastScrollYUpdate: 0,
 		};
+	},
+	methods: {
+		handleScroll() {
+			let diff = this.lastScrollYUpdate - window.scrollY;
+			if (diff < -100) {
+				this.hideHeader = true;
+				this.lastScrollYUpdate = window.scrollY;
+			} else if (diff > 20) {
+				this.hideHeader = false;
+				this.lastScrollYUpdate = window.scrollY;
+			}
+		},
+	},
+	created() {
+		window.onscroll = this.handleScroll;
 	},
 });
 </script>
@@ -39,6 +49,7 @@ export default defineComponent({
 	min-height: 100vh;
 	grid-template-rows: auto 1fr;
 }
+
 header {
 	background-color: white;
 	display: grid;
@@ -46,10 +57,15 @@ header {
 	grid-auto-flow: column dense;
 	align-items: center;
 	align-content: center;
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	border: 1px solid rgb(236, 236, 236);
+	transition: transform 0.2s ease-out;
 }
 
-header {
-	border: 1px solid rgb(236, 236, 236);
+.hideheader {
+	transform: translate(0, -100%);
 }
 
 header > * {

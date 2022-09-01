@@ -215,6 +215,11 @@ export default defineComponent({
 	transition: opacity 0.2s linear 0s;
 }
 
+aside {
+	position: sticky;
+	top: 20px;
+}
+
 .content-container {
 	height: 100%;
 	width: 100%;
