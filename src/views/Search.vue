@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { defineComponent } from "vue";
-import SearchBar from "../components/SearchBar.vue";
+import SearchBar from "../components/Search/SearchBar.vue";
 import type { FilterOptions, Instrument, User } from "../types";
-import SearchItem from "../components/SearchItem.vue";
+import SearchItem from "../components/Search/SearchItem.vue";
 import { data } from "../main";
 import router from "@/router";
-import FilterSection from "../components/FilterSection.vue";
+import FilterSection from "../components/Filter/FilterSection.vue";
+import SortDropdown from "../components/SortDropdown.vue";
 </script>
 
 <template>
@@ -29,6 +30,7 @@ import FilterSection from "../components/FilterSection.vue";
 			/>
 		</aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
+			<SortDropdown @selected="handleChangedSort" />
 			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
 	</div>
@@ -58,6 +60,7 @@ export default defineComponent({
 			currentFilter: {
 				styles: [],
 			} as FilterOptions,
+			currentSort: "",
 			//Raw json data
 			data,
 		};
@@ -74,28 +77,6 @@ export default defineComponent({
 			this.createFilteredDataBySearch();
 
 			this.applyFilter();
-
-			//Sort by relevant main instruments first
-			this.filteredUsers.sort((a, b): number => {
-				let aMainMatch = this.searchedInstruments.find(
-					(instrument) => instrument.id === a.instruments[0]
-				);
-				let bMainMatch = this.searchedInstruments.find(
-					(instrument) => instrument.id === b.instruments[0]
-				);
-
-				if (
-					(aMainMatch && bMainMatch) ||
-					(!aMainMatch && !bMainMatch)
-				) {
-					return 0;
-				} else if (aMainMatch) {
-					return -1;
-				} else if (bMainMatch) {
-					return 1;
-				}
-				return 0;
-			});
 
 			// console.log(this.availableFilterOptions);
 			// console.log(this.search);
@@ -157,6 +138,36 @@ export default defineComponent({
 			}
 		},
 
+		sortUsers() {
+			//Sort by relevant main instruments first
+			this.filteredUsers.sort((a, b): number => {
+				let aMainMatch = this.searchedInstruments.find(
+					(instrument) => instrument.id === a.instruments[0]
+				);
+				let bMainMatch = this.searchedInstruments.find(
+					(instrument) => instrument.id === b.instruments[0]
+				);
+
+				if (
+					(aMainMatch && bMainMatch) ||
+					(!aMainMatch && !bMainMatch)
+				) {
+					return 0;
+				} else if (aMainMatch) {
+					return -1;
+				} else if (bMainMatch) {
+					return 1;
+				}
+				return 0;
+			});
+
+			if (this.currentSort === "likes") {
+				this.filteredUsers.sort((a, b): number => {
+					return b.likes - a.likes;
+				});
+			}
+		},
+
 		//Handle the params
 		handleParams() {
 			if (this.$route.params.search === undefined) return;
@@ -172,6 +183,11 @@ export default defineComponent({
 		handleChangedFilter(newFilter: FilterOptions) {
 			this.currentFilter = newFilter;
 			this.applyFilter();
+		},
+
+		handleChangedSort(newSort: string) {
+			this.currentSort = newSort;
+			this.sortUsers();
 		},
 	},
 	created() {

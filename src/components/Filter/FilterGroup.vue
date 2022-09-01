@@ -57,6 +57,7 @@ export default defineComponent({
 .group-container {
 	display: grid;
 	grid-template-rows: auto 1fr;
+	padding: 0.5rem;
 }
 
 .button-group {

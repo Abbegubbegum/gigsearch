@@ -27,7 +27,7 @@
 			<div class="header-end-container">
 				<div class="location-container">
 					<img
-						src="../assets/icons/map-pin.svg"
+						src="@/assets/icons/map-pin.svg"
 						alt="Map pin icon"
 						width="25"
 					/>
@@ -63,7 +63,7 @@
 import type { User } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
-import { data } from "../main";
+import { data } from "@/main";
 
 export default defineComponent({
 	data() {
