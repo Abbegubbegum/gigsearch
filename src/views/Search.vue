@@ -9,6 +9,8 @@ import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
 </script>
 
+<!-- TODO: CLEAR FILTERS ON SEARCH !!!! -->
+
 <template>
 	<div class="content-container">
 		<div
@@ -74,6 +76,10 @@ export default defineComponent({
 			this.search = this.searchBarValue;
 			//Empties filter options
 			this.availableFilterOptions.styles = [];
+			this.availableFilterOptions.locations = [];
+			this.currentFilter = {
+				mainInstrumentOnly: this.currentFilter.mainInstrumentOnly,
+			};
 			//Updates params
 			router.push(/search/ + this.search);
 
@@ -136,6 +142,14 @@ export default defineComponent({
 			//Copy the searched users
 			this.filteredUsers = [...this.searchedUsers];
 
+			if (this.currentFilter.mainInstrumentOnly) {
+				this.filteredUsers = this.filteredUsers.filter((user) =>
+					this.searchedInstruments.find(
+						(instrument) => instrument.id === user.instruments[0]
+					)
+				);
+			}
+
 			//If styles filter is active
 			if (
 				this.currentFilter.styles &&
@@ -146,14 +160,6 @@ export default defineComponent({
 						this.currentFilter.styles?.find(
 							(filterStyle) => filterStyle === style
 						)
-					)
-				);
-			}
-
-			if (this.currentFilter.mainInstrumentOnly) {
-				this.filteredUsers = this.filteredUsers.filter((user) =>
-					this.searchedInstruments.find(
-						(instrument) => instrument.id === user.instruments[0]
 					)
 				);
 			}
