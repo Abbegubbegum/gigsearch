@@ -10,6 +10,7 @@ import { defineComponent } from "vue";
 			:placeholder="placeholder"
 			v-model="content"
 			@input="handleInput"
+			autofocus
 		/>
 		<input type="submit" value="🔍" class="submit-btn" />
 	</form>

@@ -90,7 +90,6 @@ input {
 	height: 100%;
 	width: 5rem;
 	border: none;
-	box-shadow: 1px 1px 3px black;
 }
 
 .dropdown-content {

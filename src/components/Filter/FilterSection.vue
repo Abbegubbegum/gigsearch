@@ -80,6 +80,10 @@ export default defineComponent({
 
 .group-container {
 	border-top: 1px solid grey;
+	display: grid;
+	width: 100%;
+	grid-template-rows: auto 1fr;
+	padding: 0.5rem;
 }
 
 .filter-title {
