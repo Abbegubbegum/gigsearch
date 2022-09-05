@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import SearchBar from "../components/Search/SearchBar.vue";
 import type { FilterOptions, Instrument, User } from "../types";
 import SearchItem from "../components/Search/SearchItem.vue";
-import { data } from "../main";
+import { store } from "../main";
 import router from "@/router";
 import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
@@ -65,7 +65,7 @@ export default defineComponent({
 			} as FilterOptions,
 			currentSort: "",
 			//Raw json data
-			data,
+			store,
 		};
 	},
 	methods: {
@@ -91,14 +91,16 @@ export default defineComponent({
 		//Populates all relevant data from initial search
 		createFilteredDataBySearch() {
 			//Create searched instruments list
-			this.searchedInstruments = data.instruments.filter((instrument) => {
-				return instrument.name
-					.toLowerCase()
-					.includes(this.search.toLowerCase());
-			});
+			this.searchedInstruments = store.instruments.filter(
+				(instrument) => {
+					return instrument.name
+						.toLowerCase()
+						.includes(this.search.toLowerCase());
+				}
+			);
 
 			//Filter users to only contain users who has the searched instruments
-			this.searchedUsers = data.users.filter(
+			this.searchedUsers = store.users.filter(
 				(user) =>
 					user.instruments.find(
 						(instrumentID) =>

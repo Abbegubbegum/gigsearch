@@ -6,7 +6,7 @@
 					<img
 						:src="
 							'/src/assets/icons/' +
-							data.instruments[user.instruments[0]].iconName
+							store.instruments[user.instruments[0]].iconName
 						"
 						alt="Instrument Icon"
 						height="30"
@@ -43,7 +43,7 @@
 						v-for="instrumentID in user.instruments"
 						class="instrument"
 					>
-						{{ capitalize(data.instruments[instrumentID].name) }}
+						{{ capitalize(store.instruments[instrumentID].name) }}
 					</li>
 				</ul>
 				<ul class="styles-container">
@@ -63,12 +63,12 @@
 import type { User } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
-import { data } from "@/main";
+import { store } from "@/main";
 
 export default defineComponent({
 	data() {
 		return {
-			data,
+			store,
 		};
 	},
 	props: {

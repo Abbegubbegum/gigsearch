@@ -1,16 +1,7 @@
 export interface User {
 	id: number;
-	name: string;
-	likes: number;
-	experienceRating: number;
-	location: string;
-	instruments: number[];
-	styles: string[];
-	about: string;
-}
-
-interface Thing {
-	id: string;
+	username: string;
+	password: string;
 	name: string;
 	likes: number;
 	experienceRating: number;
@@ -30,4 +21,9 @@ export interface FilterOptions {
 	styles?: string[];
 	locations?: string[];
 	mainInstrumentOnly?: boolean;
+}
+
+export interface Session {
+	sessionId: string;
+	uId: number;
 }

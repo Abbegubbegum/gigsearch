@@ -10,6 +10,7 @@ import { defineComponent } from "vue";
 				>GIG<span class="logo-color">search</span>
 			</RouterLink>
 			<RouterLink to="/search/" class="link"> Search </RouterLink>
+			<RouterLink to="/login" class="link push-right"> Login </RouterLink>
 		</header>
 		<div>
 			<RouterView />
@@ -52,9 +53,8 @@ export default defineComponent({
 
 header {
 	background-color: white;
-	display: grid;
-	grid-auto-columns: min-content;
-	grid-auto-flow: column dense;
+	display: flex;
+	justify-content: flex-start;
 	align-items: center;
 	align-content: center;
 	position: sticky;
@@ -80,6 +80,7 @@ header > * {
 	font-size: 1.5rem;
 	font-weight: bold;
 }
+
 .home-btn {
 	font-size: 2rem;
 	font-weight: bold;
@@ -88,5 +89,10 @@ header > * {
 .logo-color {
 	color: rgb(125, 211, 40);
 	font-weight: bolder;
+}
+
+.push-right {
+	margin-left: auto;
+	border-left: 1px solid rgb(236, 236, 236);
 }
 </style>

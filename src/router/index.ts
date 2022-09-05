@@ -18,6 +18,16 @@ const router = createRouter({
 			component: () => import("../views/Search.vue"),
 			// component: SoloSearch,
 		},
+		{
+			path: "/profile/:uid?",
+			name: "Profile",
+			component: () => import("../views/Profile.vue"),
+		},
+		{
+			path: "/login",
+			name: "Login",
+			component: () => import("../views/Login.vue"),
+		},
 	],
 });
 
