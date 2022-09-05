@@ -23,20 +23,22 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { store } from "@/main";
+import { getSessions, getUserFromSessionId, getUsers } from "@/main";
 import router from "@/router";
-import type { Session } from "@/types";
+import type { Session, User } from "@/types";
 
 export default defineComponent({
 	data() {
 		return {
 			username: "",
 			password: "",
+			users: [] as User[],
+			sessions: [] as Session[],
 		};
 	},
 	methods: {
 		async handleLogin() {
-			let user = store.users.find(
+			let user = this.users.find(
 				(user) => user.username === this.username
 			);
 			if (!user) {
@@ -59,7 +61,7 @@ export default defineComponent({
 			};
 
 			while (
-				store.sessions.find(
+				this.sessions.find(
 					(active) => active.sessionId === session.sessionId
 				)
 			) {
@@ -71,10 +73,10 @@ export default defineComponent({
 				};
 			}
 
-			store.sessions.push(session);
+			this.sessions.push(session);
 			localStorage.setItem("sessionId", session.sessionId);
 			router.push(`/profile/${session.uId}`);
-			console.log(store.sessions);
+			console.log(this.sessions);
 		},
 
 		async hash(val: string): Promise<string> {
@@ -86,17 +88,19 @@ export default defineComponent({
 
 			return this.toHexString(hashArray);
 		},
+
 		toHexString(byteArray: number[]): string {
 			return Array.from(byteArray, function (byte) {
 				return ("0" + (byte & 0xff).toString(16)).slice(-2);
 			}).join("");
 		},
 	},
-	created() {
-		console.log("Created");
+	async created() {
+		this.sessions = await getSessions();
+		this.users = await getUsers();
 		let localSessionId = localStorage.getItem("sessionId");
 		if (localSessionId) {
-			let user = store.getUserFromSessionId(localSessionId);
+			let user = await getUserFromSessionId(localSessionId);
 
 			if (!user) {
 				localStorage.removeItem("sessionId");

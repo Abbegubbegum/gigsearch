@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import SearchBar from "../components/Search/SearchBar.vue";
 import type { FilterOptions, Instrument, User } from "../types";
 import SearchItem from "../components/Search/SearchItem.vue";
-import { store } from "../main";
+import { getInstruments, getUsers } from "../main";
 import router from "@/router";
 import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
@@ -66,8 +66,8 @@ export default defineComponent({
 				locations: [],
 			} as FilterOptions,
 			currentSort: "",
-			//Raw json data
-			store,
+			users: [] as User[],
+			instruments: [] as Instrument[],
 		};
 	},
 	methods: {
@@ -97,16 +97,14 @@ export default defineComponent({
 		//Populates all relevant data from initial search
 		createFilteredDataBySearch() {
 			//Create searched instruments list
-			this.searchedInstruments = store.instruments.filter(
-				(instrument) => {
-					return instrument.name
-						.toLowerCase()
-						.includes(this.search.toLowerCase());
-				}
-			);
+			this.searchedInstruments = this.instruments.filter((instrument) => {
+				return instrument.name
+					.toLowerCase()
+					.includes(this.search.toLowerCase());
+			});
 
 			//Filter users to only contain users who has the searched instruments
-			this.searchedUsers = store.users.filter(
+			this.searchedUsers = this.users.filter(
 				(user) =>
 					user.instruments.find(
 						(instrumentID) =>
@@ -233,8 +231,10 @@ export default defineComponent({
 			this.sortUsers();
 		},
 	},
-	created() {
+	async mounted() {
 		this.handleParams();
+		this.users = await getUsers();
+		this.instruments = await getInstruments();
 	},
 	watch: {
 		$route(to, from) {

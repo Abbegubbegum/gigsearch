@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import type { User } from "@/types";
+import type { Instrument, User } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
 import { store } from "@/main";

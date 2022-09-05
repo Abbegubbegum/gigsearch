@@ -3,15 +3,21 @@
 </template>
 
 <script lang="ts">
-import { store } from "@/main";
+import { getSessions } from "@/main";
 import router from "@/router";
 import { defineComponent } from "vue";
-import type { User } from "@/types";
+import type { Session, User } from "@/types";
 
 export default defineComponent({
-	created() {
+	data() {
+		return {
+			sessions: [] as Session[],
+		};
+	},
+	async created() {
 		let localSessionId = localStorage.getItem("sessionId");
-		let session = store.sessions.find(
+		this.sessions = await getSessions();
+		let session = this.sessions.find(
 			(session) => session.sessionId === localSessionId
 		);
 
