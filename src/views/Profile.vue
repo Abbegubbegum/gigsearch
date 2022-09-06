@@ -26,10 +26,10 @@ export default defineComponent({
 			return;
 		}
 
-		if (this.$route.params.uid === session.uId.toString()) {
-			router.push(`/profile/${session.uId}`);
+		if (this.$route.params.uid === session.id.toString()) {
+			router.push(`/profile/${session.id}`);
 		} else {
-			console.error("Weird user matching problem");
+			console.log("userid param does not match with session id");
 		}
 	},
 });

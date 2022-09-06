@@ -18,12 +18,25 @@
 				<input type="submit" value="Login" class="submit-btn" />
 			</form>
 		</div>
+		<button
+			type="button"
+			class="register-btn"
+			@click="$router.push('/register')"
+		>
+			Register
+		</button>
 	</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getSessions, getUserFromSessionId, getUsers } from "@/main";
+import {
+	createSession,
+	getSessions,
+	getUserFromSessionId,
+	getUsers,
+	hash,
+} from "@/main";
 import router from "@/router";
 import type { Session, User } from "@/types";
 
@@ -55,44 +68,10 @@ export default defineComponent({
 				return;
 			}
 
-			let session: Session = {
-				sessionId: await this.hash((Math.random() * 100000).toString()),
-				uId: user.id,
-			};
+			let sessionId = await createSession(user.id);
 
-			while (
-				this.sessions.find(
-					(active) => active.sessionId === session.sessionId
-				)
-			) {
-				session = {
-					sessionId: await this.hash(
-						(Math.random() * 10000000000).toString()
-					),
-					uId: user.id,
-				};
-			}
-
-			this.sessions.push(session);
-			localStorage.setItem("sessionId", session.sessionId);
-			router.push(`/profile/${session.uId}`);
-			console.log(this.sessions);
-		},
-
-		async hash(val: string): Promise<string> {
-			let data = new TextEncoder().encode(val);
-
-			let hashBuffer = await crypto.subtle.digest("SHA-256", data);
-
-			let hashArray = Array.from(new Uint8Array(hashBuffer));
-
-			return this.toHexString(hashArray);
-		},
-
-		toHexString(byteArray: number[]): string {
-			return Array.from(byteArray, function (byte) {
-				return ("0" + (byte & 0xff).toString(16)).slice(-2);
-			}).join("");
+			localStorage.setItem("sessionId", sessionId);
+			router.push(`/profile/${user.id}`);
 		},
 	},
 	async created() {
@@ -117,6 +96,7 @@ export default defineComponent({
 .content-container {
 	height: 100%;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 }
@@ -147,6 +127,12 @@ input {
 }
 
 .submit-btn {
+	padding: 5px 1rem;
+	font-size: 1rem;
+}
+
+.register-btn {
+	margin: 1rem;
 	padding: 5px 1rem;
 	font-size: 1rem;
 }

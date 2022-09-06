@@ -9,8 +9,6 @@ import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
 </script>
 
-<!-- TODO: CLEAR FILTERS ON SEARCH !!!! -->
-
 <template>
 	<div class="content-container">
 		<div
@@ -77,9 +75,7 @@ export default defineComponent({
 			//Empties filter options
 			this.availableFilterOptions.styles = [];
 			this.availableFilterOptions.locations = [];
-			this.currentFilter = {
-				mainInstrumentOnly: this.currentFilter.mainInstrumentOnly,
-			};
+
 			//Updates params
 			router.push(/search/ + this.search);
 
@@ -137,6 +133,43 @@ export default defineComponent({
 
 		//Apply current filter
 		applyFilter() {
+			if (this.currentFilter.styles) {
+				for (
+					let i = this.currentFilter.styles.length - 1;
+					i >= 0;
+					i--
+				) {
+					if (
+						this.availableFilterOptions.styles?.find(
+							(availiableStyle) =>
+								this.currentFilter.styles &&
+								availiableStyle === this.currentFilter.styles[i]
+						) === undefined
+					) {
+						this.currentFilter.styles.splice(i, 1);
+					}
+				}
+			}
+
+			if (this.currentFilter.locations) {
+				for (
+					let i = this.currentFilter.locations.length - 1;
+					i >= 0;
+					i--
+				) {
+					if (
+						this.availableFilterOptions.locations?.find(
+							(availiableStyle) =>
+								this.currentFilter.locations &&
+								availiableStyle ===
+									this.currentFilter.locations[i]
+						) === undefined
+					) {
+						this.currentFilter.locations.splice(i, 1);
+					}
+				}
+			}
+
 			//Copy the searched users
 			this.filteredUsers = [...this.searchedUsers];
 

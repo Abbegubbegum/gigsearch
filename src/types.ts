@@ -11,6 +11,18 @@ export interface User {
 	about: string;
 }
 
+export interface newUser {
+	username: string;
+	password: string;
+	name: string;
+	likes: number;
+	experienceRating: number;
+	location: string;
+	instruments: number[];
+	styles: string[];
+	about: string;
+}
+
 export interface Instrument {
 	id: number;
 	name: string;
@@ -25,5 +37,5 @@ export interface FilterOptions {
 
 export interface Session {
 	sessionId: string;
-	uId: number;
+	id: number;
 }
