@@ -43,8 +43,8 @@
   ],
   "sessions": [
     {
-      "sessionKey": "fab8230d54545fd6347098446516e6746c6e1e7e3b35b264dd181012bf5ebd5c",
-      "id": 191
+      "sessionKey": "9af4d5d55b52c8a7a91d64a5e963fb377e36cd8d61d2f7053aa315c0d711b741",
+      "id": 201
     }
   ],
   "users": [
@@ -3990,6 +3990,18 @@
       "styles": [],
       "about": "",
       "id": 200
+    },
+    {
+      "username": "theboi",
+      "password": "admin",
+      "name": "boi 5",
+      "likes": 0,
+      "experienceRating": 0,
+      "location": "",
+      "instruments": [],
+      "styles": [],
+      "about": "",
+      "id": 201
     }
   ]
 }

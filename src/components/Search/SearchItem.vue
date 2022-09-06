@@ -90,7 +90,7 @@ export default defineComponent({
 .item-container {
 	box-shadow: 5px 5px 5px;
 	border: 1px solid gray;
-	width: clamp(200px, 100%, 600px);
+	width: clamp(200px, 100%, 800px);
 	display: grid;
 	grid-template-rows: auto;
 }
