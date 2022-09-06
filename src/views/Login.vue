@@ -33,7 +33,7 @@ import { defineComponent } from "vue";
 import {
 	createSession,
 	getSessions,
-	getUserFromSessionId,
+	getUserFromSessionKey,
 	getUsers,
 	hash,
 } from "@/main";
@@ -68,26 +68,27 @@ export default defineComponent({
 				return;
 			}
 
-			let sessionId = await createSession(user.id);
+			let sessionKey = await createSession(user.id);
+			localStorage.setItem("sessionKey", sessionKey);
+			this.$emit("updateLogin");
 
-			localStorage.setItem("sessionId", sessionId);
 			router.push(`/profile/${user.id}`);
 		},
 	},
 	async created() {
 		this.sessions = await getSessions();
 		this.users = await getUsers();
-		let localSessionId = localStorage.getItem("sessionId");
-		if (localSessionId) {
-			let user = await getUserFromSessionId(localSessionId);
+		let localsessionKey = localStorage.getItem("sessionKey");
+		if (!localsessionKey) return;
 
-			if (!user) {
-				localStorage.removeItem("sessionId");
-				return;
-			}
+		let user = await getUserFromSessionKey(localsessionKey);
 
-			router.push(`/profile/${user.id}`);
+		if (!user) {
+			localStorage.removeItem("sessionKey");
+			return;
 		}
+
+		router.push(`/profile/${user.id}`);
 	},
 });
 </script>

@@ -89,9 +89,10 @@ export default defineComponent({
 			)?.id;
 
 			if (userId) {
-				let sessionId = await createSession(userId);
-				localStorage.setItem("sessionId", sessionId);
-				router.push("/profile/" + userId );
+				let sessionKey = await createSession(userId);
+				localStorage.setItem("sessionKey", sessionKey);
+				this.$emit("updateLogin");
+				router.push("/profile/" + userId);
 			} else {
 				console.error("Username registered but not found");
 				console.log(this.users, this.username);

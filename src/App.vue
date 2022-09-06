@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
+import { getUserFromSessionKey, getUsers, removeCurrentSession } from "./main";
+import type { User } from "./types";
 </script>
 
 <template>
@@ -10,10 +12,29 @@ import { defineComponent } from "vue";
 				>GIG<span class="logo-color">search</span>
 			</RouterLink>
 			<RouterLink to="/search/" class="link"> Search </RouterLink>
-			<RouterLink to="/login" class="link push-right"> Login </RouterLink>
+			<div
+				class="dropdown-container push-right"
+				@mouseover="dropdownHover = true"
+				@mouseleave="dropdownHover = false"
+			>
+				<RouterLink :to="profileButtonLink" class="link">
+					{{ profileButtonLabel }}
+				</RouterLink>
+				<div class="dropdown-content" v-if="showDropdown">
+					<RouterLink
+						:to="'/profile/' + authedId"
+						class="dropdown-item"
+					>
+						Profile
+					</RouterLink>
+					<button type="button" class="dropdown-item" @click="logout">
+						Logout
+					</button>
+				</div>
+			</div>
 		</header>
 		<div>
-			<RouterView />
+			<RouterView @update-login="updateLogin" />
 		</div>
 	</div>
 </template>
@@ -24,6 +45,10 @@ export default defineComponent({
 		return {
 			hideHeader: false,
 			lastScrollYUpdate: 0,
+			authed: false,
+			authedName: "",
+			authedId: "",
+			dropdownHover: false,
 		};
 	},
 	methods: {
@@ -37,9 +62,48 @@ export default defineComponent({
 				this.lastScrollYUpdate = window.scrollY;
 			}
 		},
+		async updateLogin() {
+			let sessionKey = localStorage.getItem("sessionKey");
+
+			if (!sessionKey) {
+				this.authed = false;
+				return;
+			}
+
+			let authUser = await getUserFromSessionKey(sessionKey);
+
+			if (!authUser) {
+				localStorage.removeItem("sessionKey");
+				this.authed = false;
+				return;
+			}
+
+			this.authed = true;
+			this.authedName = authUser.name;
+			this.authedId = authUser.id.toString();
+		},
+		logout() {
+			this.authed = false;
+			this.authedName = "";
+			this.authedId = "";
+
+			removeCurrentSession();
+		},
+	},
+	computed: {
+		profileButtonLink() {
+			return this.authed ? "/profile/" + this.authedId : "/login";
+		},
+		profileButtonLabel() {
+			return this.authed ? this.authedName : "Login";
+		},
+		showDropdown() {
+			return this.dropdownHover && this.authed;
+		},
 	},
 	created() {
 		window.onscroll = this.handleScroll;
+		this.updateLogin();
 	},
 });
 </script>
@@ -48,7 +112,7 @@ export default defineComponent({
 .content {
 	display: grid;
 	min-height: 100vh;
-	grid-template-rows: auto 1fr;
+	grid-template-rows: 5rem 1fr;
 }
 
 header {
@@ -56,7 +120,6 @@ header {
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
-	align-content: center;
 	position: sticky;
 	top: 0;
 	z-index: 50;
@@ -75,6 +138,8 @@ header > * {
 
 .link {
 	text-decoration: none;
+	display: inline-block;
+	height: 100%;
 	color: black;
 	padding: 1rem;
 	font-size: 1.5rem;
@@ -94,5 +159,27 @@ header > * {
 .push-right {
 	margin-left: auto;
 	border-left: 1px solid rgb(236, 236, 236);
+}
+
+.dropdown-content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.dropdown-item {
+	width: 100%;
+	font-size: 1rem;
+	font-weight: 400;
+	text-decoration: none;
+	color: black;
+	background-color: whitesmoke;
+	text-align: end;
+	border: 1px solid rgb(236, 236, 236);
+	padding: 0.5rem;
+}
+.dropdown-item:hover {
+	cursor: pointer;
+	background-color: rgb(226, 225, 225);
 }
 </style>

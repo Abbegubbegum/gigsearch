@@ -36,6 +36,6 @@ export interface FilterOptions {
 }
 
 export interface Session {
-	sessionId: string;
+	sessionKey: string;
 	id: number;
 }

@@ -5,7 +5,7 @@ import "./assets/base.css";
 import { reactive } from "vue";
 import instruments from "./assets/instruments.json";
 import type { User, Instrument, Session, newUser } from "./types";
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 
 export const store = reactive({
 	apiURL: "http://localhost:3000/",
@@ -23,6 +23,18 @@ export async function getUsers(): Promise<User[]> {
 	return (await axios.get(store.apiURL + "users")).data;
 }
 
+export async function getUser(userId: number): Promise<User | undefined> {
+	let res = await axios.get(store.apiURL + "users/" + userId).catch((err) => {
+		return undefined;
+	});
+
+	if (res?.status === 200 || res?.status === 304) {
+		return res.data;
+	}
+
+	return undefined;
+}
+
 export async function getInstruments(): Promise<Instrument[]> {
 	return (await axios.get(store.apiURL + "instruments")).data;
 }
@@ -31,20 +43,18 @@ export async function getSessions(): Promise<Session[]> {
 	return (await axios.get(store.apiURL + "sessions")).data;
 }
 
-export async function getUserFromSessionId(
-	sessionId: string
+export async function getUserFromSessionKey(
+	sessionKey: string
 ): Promise<User | undefined> {
 	let sessions = await getSessions();
-	let session = sessions.find((session) => session.sessionId === sessionId);
+	let session = sessions.find((session) => session.sessionKey === sessionKey);
 
 	if (!session) {
-		console.log("Session not found: " + sessionId);
+		console.log("Session not found: " + sessionKey);
 		return undefined;
 	}
 
-	let users = await getUsers();
-
-	let user = users.find((user) => user.id === session?.id);
+	let user = await getUser(session.id);
 
 	if (!user) {
 		console.log("User not found: " + session.id);
@@ -60,21 +70,47 @@ export async function addUser(user: newUser) {
 
 export async function createSession(userId: number): Promise<string> {
 	let sessions = await getSessions();
+
+	let duplicateSession = sessions.find((session) => session.id === userId);
+
+	if (duplicateSession) {
+		return duplicateSession.sessionKey;
+	}
+
 	let session: Session = {
-		sessionId: await hash((Math.random() * 100000).toString()),
+		sessionKey: await hash((Math.random() * 100000).toString()),
 		id: userId,
 	};
 
-	while (sessions.find((active) => active.sessionId === session.sessionId)) {
+	while (
+		sessions.find((active) => active.sessionKey === session.sessionKey)
+	) {
 		session = {
-			sessionId: await hash((Math.random() * 10000000000).toString()),
+			sessionKey: await hash((Math.random() * 10000000000).toString()),
 			id: userId,
 		};
 	}
 
 	await axios.post(store.apiURL + "sessions", session);
 
-	return session.sessionId;
+	return session.sessionKey;
+}
+
+export async function removeCurrentSession() {
+	let sessionKey = localStorage.getItem("sessionKey");
+
+	if (!sessionKey) return;
+
+	let user = await getUserFromSessionKey(sessionKey);
+
+	if (!user) {
+		localStorage.removeItem("sessionKey");
+
+		return;
+	}
+
+	await axios.delete(store.apiURL + "sessions/" + user.id);
+	localStorage.removeItem("sessionKey");
 }
 
 export async function hash(val: string): Promise<string> {

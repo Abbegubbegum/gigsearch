@@ -43,12 +43,8 @@
   ],
   "sessions": [
     {
-      "sessionId": "abcfds",
-      "id": 144
-    },
-    {
-      "sessionId": "fed9a8298dd33005f273d65509afaa3438979184537a5e18e123e4793dfe2f4f",
-      "id": 200
+      "sessionKey": "fab8230d54545fd6347098446516e6746c6e1e7e3b35b264dd181012bf5ebd5c",
+      "id": 191
     }
   ],
   "users": [

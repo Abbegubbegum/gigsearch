@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { getSessions } from "@/main";
+import { getSessions, getUserFromSessionKey } from "@/main";
 import router from "@/router";
 import { defineComponent } from "vue";
 import type { Session, User } from "@/types";
@@ -11,25 +11,23 @@ import type { Session, User } from "@/types";
 export default defineComponent({
 	data() {
 		return {
-			sessions: [] as Session[],
+			authedUser: false,
 		};
 	},
 	async created() {
-		let localSessionId = localStorage.getItem("sessionId");
-		this.sessions = await getSessions();
-		let session = this.sessions.find(
-			(session) => session.sessionId === localSessionId
-		);
+		let localsessionKey = localStorage.getItem("sessionKey");
 
-		if (!session) {
-			router.push("/login");
+		if (!localsessionKey) return;
+
+		let user = await getUserFromSessionKey(localsessionKey);
+
+		if (!user) {
+			localStorage.removeItem("sessionKey");
 			return;
 		}
 
-		if (this.$route.params.uid === session.id.toString()) {
-			router.push(`/profile/${session.id}`);
-		} else {
-			console.log("userid param does not match with session id");
+		if (user.id.toString() === this.$route.params.uid) {
+			this.authedUser = true;
 		}
 	},
 });
