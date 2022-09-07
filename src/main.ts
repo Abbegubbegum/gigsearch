@@ -65,7 +65,11 @@ export async function getUserFromSessionKey(
 }
 
 export async function addUser(user: newUser) {
-	let res = await axios.post(store.apiURL + "users", user);
+	await axios.post(store.apiURL + "users", user);
+}
+
+export async function putUser(user: User) {
+	await axios.put(store.apiURL + "users/" + user.id, user);
 }
 
 export async function createSession(userId: number): Promise<string> {

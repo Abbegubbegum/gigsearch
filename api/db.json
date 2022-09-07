@@ -43,46 +43,17 @@
   ],
   "sessions": [
     {
-      "sessionKey": "9af4d5d55b52c8a7a91d64a5e963fb377e36cd8d61d2f7053aa315c0d711b741",
-      "id": 201
-    },
-    {
-      "sessionKey": "c49463e1f69c330629a47bcca88c65054ffaa7e90474ce4f94a387f755fb68e0",
-      "id": 202
-    },
-    {
-      "sessionKey": "5694ead3f79438e5a90456a2a35abbc01194f971a92a7ecba413d4965d7b49c2",
-      "id": 203
-    },
-    {
-      "sessionKey": "3c04d2ce554e515c26b83f1f1e5e8ff2392f6ec041191c4966f491113ee07a35",
-      "id": 200
+      "sessionKey": "8c7556dc2c03173549e93a5def350c5892e5b919bdef0881e53877b234fc283f",
+      "id": 1
     }
   ],
   "users": [
-    {
-      "id": 0,
-      "username": "orangemouse353",
-      "password": "bird",
-      "name": "Hilde Gratia",
-      "location": "Ronks",
-      "instruments": [
-        7,
-        4
-      ],
-      "styles": [
-        "post-rock"
-      ],
-      "about": "Suspendisse sed eleifend massa. Sed molestie justo nisl, ut efficitur purus commodo at. Integer semper ligula sed est elementum, at dignissim dolor consequat. Curabitur faucibus vel massa non hendrerit. Nunc condimentum sollicitudin nisi ut molestie. Nam faucibus, felis in pharetra scelerisque, dui justo convallis mi, eu cursus quam metus quis.",
-      "likes": 5476,
-      "experienceRating": 1.9
-    },
     {
       "id": 1,
       "username": "blackgorilla346",
       "password": "moomoo",
       "name": "Hildegaard Ashmead",
-      "location": "Forestdale",
+      "location": "Forest",
       "instruments": [
         6,
         3,
@@ -4014,6 +3985,23 @@
       "styles": [],
       "about": "",
       "id": 201
+    },
+    {
+      "id": 202,
+      "username": "orangemouse353",
+      "password": "bird",
+      "name": "Hilde Gratia",
+      "location": "Ronks",
+      "instruments": [
+        7,
+        4
+      ],
+      "styles": [
+        "post-rock"
+      ],
+      "about": "Suspendisse sed eleifend massa. Sed molestie justo nisl, ut efficitur purus commodo at. Integer semper ligula sed est elementum, at dignissim dolor consequat. Curabitur faucibus vel massa non hendrerit. Nunc condimentum sollicitudin nisi ut molestie. Nam faucibus, felis in pharetra scelerisque, dui justo convallis mi, eu cursus quam metus quis.",
+      "likes": 5476,
+      "experienceRating": 1.9
     }
   ]
 }

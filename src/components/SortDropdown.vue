@@ -97,7 +97,6 @@ input {
 	border: 1px solid gray;
 	box-shadow: 3px 3px 5px black;
 	position: absolute;
-	width: 100%;
 	top: 100%;
 }
 
