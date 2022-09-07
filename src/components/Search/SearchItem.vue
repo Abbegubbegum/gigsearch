@@ -1,5 +1,5 @@
 <template>
-	<div class="item-container">
+	<div class="item-container" @click="handleClick">
 		<div class="item-header">
 			<div class="title-container">
 				<div class="name-container">
@@ -15,7 +15,7 @@
 				</div>
 				<div class="experience-container">
 					Level:
-					<star-rating
+					<StarRating
 						v-model:rating="user.experienceRating"
 						:increment="0.01"
 						:read-only="true"
@@ -64,6 +64,7 @@ import type { Instrument, User } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
 import { store } from "@/main";
+import router from "@/router";
 
 export default defineComponent({
 	data() {
@@ -79,6 +80,9 @@ export default defineComponent({
 	},
 	methods: {
 		capitalize,
+		handleClick() {
+			router.push("/profile/" + this.user.id);
+		},
 	},
 	components: {
 		StarRating,
@@ -93,6 +97,12 @@ export default defineComponent({
 	width: clamp(200px, 100%, 800px);
 	display: grid;
 	grid-template-rows: auto;
+	transition: all 0.2s ease;
+}
+
+.item-container:hover {
+	cursor: pointer;
+	transform: scale(1.05);
 }
 
 .item-header {

@@ -3,6 +3,7 @@ import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
 import { getUserFromSessionKey, getUsers, removeCurrentSession } from "./main";
 import type { User } from "./types";
+import router from "./router";
 </script>
 
 <template>
@@ -88,6 +89,8 @@ export default defineComponent({
 			this.authedId = "";
 
 			removeCurrentSession();
+
+			router.push("/");
 		},
 	},
 	computed: {

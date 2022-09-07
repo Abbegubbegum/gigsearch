@@ -33,6 +33,11 @@ const router = createRouter({
 			name: "Register",
 			component: () => import("../views/Register.vue"),
 		},
+		{
+			path: "/:pathMatch(.*)*",
+			name: "404 Not Found",
+			component: () => import("../views/404.vue"),
+		},
 	],
 });
 

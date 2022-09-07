@@ -10,7 +10,6 @@
 		"type-check": "vue-tsc --noEmit"
 	},
 	"dependencies": {
-		"@types/axios": "^0.14.0",
 		"axios": "^0.27.2",
 		"json-server": "^0.17.0",
 		"vue": "^3.2.37",
