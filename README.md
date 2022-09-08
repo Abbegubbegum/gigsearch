@@ -1,4 +1,4 @@
-## !!OBS!! OPEN TWO TERMINALS AND RUN 'npm run serve-db' AND 'npm run dev'
+## !!OBS!! OPEN TWO TERMINALS AND RUN 'npm run serve-db' AND 'npm run dev' TO RUN THE WEBSITE
 
 
 # gigsearch
