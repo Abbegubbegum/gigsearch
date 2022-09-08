@@ -95,9 +95,11 @@ input {
 .dropdown-content {
 	align-self: flex-end;
 	border: 1px solid gray;
+	background-color: whitesmoke;
 	box-shadow: 3px 3px 5px black;
 	position: absolute;
 	top: 100%;
+	z-index: 10;
 }
 
 .dropdown-item {

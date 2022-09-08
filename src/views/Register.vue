@@ -119,7 +119,7 @@ export default defineComponent({
 	align-content: center;
 	gap: 1rem;
 	border: 1px solid gray;
-	padding: 16px;
+	padding: 1rem;
 }
 
 label {
@@ -134,7 +134,7 @@ label {
 }
 
 input[type="submit"] {
-	padding: 4px;
+	padding: 0.3rem;
 	font-size: 1rem;
 	font-weight: bold;
 	background-color: green;

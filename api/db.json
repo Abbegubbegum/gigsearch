@@ -41,16 +41,7 @@
       "iconName": "cello.svg"
     }
   ],
-  "sessions": [
-    {
-      "sessionKey": "8c7556dc2c03173549e93a5def350c5892e5b919bdef0881e53877b234fc283f",
-      "id": 1
-    },
-    {
-      "sessionKey": "16307d3edab63736681dbbbe0e31764d80682f121bd67a0bd524c0a5079e5b7d",
-      "id": 200
-    }
-  ],
+  "sessions": [],
   "users": [
     {
       "id": 1,
@@ -58,17 +49,9 @@
       "password": "moomoo",
       "name": "Hildegaard Ashmead",
       "location": "Forest",
-      "instruments": [
-        6,
-        3,
-        4
-      ],
-      "styles": [
-        "nakasi",
-        "franco-country",
-        "songo-salsa"
-      ],
-      "about": "Suspendisse sed eleifend massa. Sed molestie justo nisl, ut efficitur purus commodo at. Integer semper ligula sed est elementum, at dignissim dolor consequat. Curabitur faucibus vel massa non hendrerit. Nunc condimentum sollicitudin nisi ut molestie. Nam faucibus, felis in pharetra scelerisque, dui justo convallis mi, eu cursus quam metus quis.",
+      "instruments": [],
+      "styles": [],
+      "about": "fdsafds",
       "likes": 8470,
       "experienceRating": 0.9
     },

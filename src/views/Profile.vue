@@ -131,7 +131,7 @@ export default defineComponent({
 
 .content-container {
 	height: 95%;
-	width: clamp(200px, 70%, 900px);
+	width: clamp(13rem, 70%, 56rem);
 	border: 1px solid grey;
 	background-color: whitesmoke;
 	border-radius: 3rem;

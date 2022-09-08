@@ -22,6 +22,11 @@ import SortDropdown from "../components/SortDropdown.vue";
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
 			/>
+			<SortDropdown
+				@selected="handleChangedSort"
+				class="sort-dropdown fadeTransition"
+				:class="{ hide: initialSearch }"
+			/>
 		</div>
 		<aside class="fadeTransition" :class="{ hide: initialSearch }">
 			<FilterSection
@@ -30,7 +35,6 @@ import SortDropdown from "../components/SortDropdown.vue";
 			/>
 		</aside>
 		<main class="fadeTransition" :class="{ hide: initialSearch }">
-			<SortDropdown @selected="handleChangedSort" class="sort-dropdown" />
 			<SearchItem v-for="user in filteredUsers" :user="user" />
 		</main>
 	</div>
@@ -284,7 +288,8 @@ export default defineComponent({
 	left: 0;
 	right: 0;
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 }
 
 .searchbar {
@@ -311,26 +316,48 @@ export default defineComponent({
 	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-columns: 1fr 3fr;
-	grid-template-rows: 10vh 1fr;
+	grid-template-rows: 17vh auto 1fr;
 }
 
 aside {
-	position: sticky;
-	top: 20px;
 	grid-row-start: 2;
 }
 
 main {
 	display: flex;
 	flex-direction: column;
-	grid-row-start: 2;
-	padding: 0 3rem 3rem 3rem;
+	grid-row-start: 3;
+	padding: 3rem;
 	align-items: center;
 	gap: 2rem;
 }
 
 .sort-dropdown {
-	align-self: flex-end;
+	align-self: center;
+	margin-top: 1rem;
+}
+
+@media only screen and (min-width: 900px) {
+	.content-container {
+		grid-template-columns: auto 1fr;
+	}
+	main {
+		grid-row-start: 2;
+	}
+	.searchbar-wrapper {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.searchbar {
+		margin-left: auto;
+		margin-right: -10rem;
+	}
+
+	.sort-dropdown {
+		margin-left: auto;
+		margin-right: 1rem;
+	}
 }
 </style>

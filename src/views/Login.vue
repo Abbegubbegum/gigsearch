@@ -118,7 +118,7 @@ export default defineComponent({
 }
 
 .login-box {
-	padding: 16px;
+	padding: 1rem;
 	border: 1px solid gray;
 	box-shadow: 1px 1px 2px gray;
 }
@@ -143,13 +143,13 @@ input {
 }
 
 .submit-btn {
-	padding: 5px 1rem;
+	padding: 0.3rem 1rem;
 	font-size: 1rem;
 }
 
 .register-btn {
 	margin: 1rem;
-	padding: 5px 1rem;
+	padding: 0.3rem 1rem;
 	font-size: 1rem;
 }
 
@@ -160,19 +160,19 @@ input {
 
 @keyframes shake {
 	0% {
-		transform: translate(3px, 0px);
+		transform: translate(0.3rem, 0);
 	}
 	25% {
-		transform: translate(-3px, 0px);
+		transform: translate(-0.3rem, 0);
 	}
 	50% {
-		transform: translate(3px, 0px);
+		transform: translate(0.3rem, 0);
 	}
 	75% {
-		transform: translate(-3px, 0px);
+		transform: translate(-0.3rem, 0);
 	}
 	100% {
-		transform: translate(0px, 0px);
+		transform: translate(0, 0);
 	}
 }
 </style>

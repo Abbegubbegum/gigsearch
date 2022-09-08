@@ -94,10 +94,13 @@ export default defineComponent({
 .item-container {
 	box-shadow: 5px 5px 5px;
 	border: 1px solid gray;
-	width: clamp(200px, 100%, 800px);
+	min-height: 20rem;
+	max-height: 30rem;
+	width: clamp(30rem, 100%, 70rem);
 	display: grid;
-	grid-template-rows: auto;
+	grid-template-rows: auto 1fr;
 	transition: all 0.2s ease;
+	overflow: hidden;
 }
 
 .item-container:hover {
@@ -157,7 +160,7 @@ export default defineComponent({
 
 ul {
 	list-style: circle;
-	padding: 0 24px;
+	padding: 0 2rem;
 	font-size: 1.5rem;
 	border-right: 1px solid gray;
 }

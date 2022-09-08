@@ -26,6 +26,7 @@
 								<span>Styles</span>
 								<input type="text" v-model="styleInput" />
 							</label>
+							<input type="submit" value="+" class="add-btn" />
 						</form>
 						<ul>
 							<li
@@ -33,6 +34,13 @@
 								@click="removeStyle(style)"
 							>
 								{{ style }}
+								<button
+									type="button"
+									class="rmv-btn"
+									@click="removeStyle(style)"
+								>
+									X
+								</button>
 							</li>
 						</ul>
 
@@ -41,6 +49,7 @@
 								<span>Instruments</span>
 								<input type="text" v-model="instrumentInput" />
 							</label>
+							<input type="submit" value="+" class="add-btn" />
 						</form>
 						<ul>
 							<li
@@ -48,6 +57,13 @@
 								@click="removeInstrument(instrument)"
 							>
 								{{ instrument.name }}
+								<button
+									type="button"
+									class="rmv-btn"
+									@click="removeInstrument(instrument)"
+								>
+									X
+								</button>
 							</li>
 						</ul>
 						<div class="button-container">
@@ -116,11 +132,13 @@ export default defineComponent({
 			this.styleInput = this.styleInput.trim();
 
 			if (this.styles.find((style) => style === this.styleInput)) {
-				console.log("Instrument already exists");
+				console.log("Style already exists");
 				return;
 			}
 
-			this.styles.push(this.styleInput);
+			if (this.styleInput.length > 0) {
+				this.styles.push(this.styleInput);
+			}
 		},
 		async handleInstrumentSubmit() {
 			this.instrumentInput = this.instrumentInput.trim();
@@ -214,7 +232,7 @@ export default defineComponent({
 }
 
 .modal-container {
-	padding: 30px;
+	padding: 2rem;
 	background-color: #fff;
 	border-radius: 10px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -264,5 +282,9 @@ li:hover {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+.add-btn {
+	margin-left: 1rem;
 }
 </style>
