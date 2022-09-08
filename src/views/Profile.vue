@@ -88,8 +88,8 @@ export default defineComponent({
 			this.user.name = newUser.name;
 			this.user.location = newUser.location;
 			this.user.about = newUser.about;
-			this.user.styles = newUser.styles;
-			this.user.instruments = newUser.instruments;
+			this.user.styles = [...newUser.styles];
+			this.user.instruments = [...newUser.instruments];
 
 			putUser(this.user);
 

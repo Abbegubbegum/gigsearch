@@ -158,7 +158,7 @@ export default defineComponent({
 			this.name = user.name;
 			this.location = user.location;
 			this.about = user.about;
-			this.styles = user.styles;
+			this.styles = [...user.styles];
 
 			user.instruments.forEach((userInstrumentId) => {
 				let instrument = allInstruments.find(

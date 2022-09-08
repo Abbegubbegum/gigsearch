@@ -3972,10 +3972,17 @@
       "name": "albin norback",
       "likes": 0,
       "experienceRating": 0,
-      "location": "",
-      "instruments": [],
-      "styles": [],
-      "about": "",
+      "location": "Forest",
+      "instruments": [
+        0,
+        4
+      ],
+      "styles": [
+        "rock",
+        "jazz",
+        "three"
+      ],
+      "about": "Im big boi with guitar",
       "id": 200
     },
     {
