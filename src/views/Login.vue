@@ -7,12 +7,22 @@
 			<form class="login-form" @submit.prevent="handleLogin">
 				<label>
 					Username:
-					<input type="text" v-model="username" required />
+					<input
+						type="text"
+						v-model="username"
+						:class="{ wronganimation: wrongUsername }"
+						required
+					/>
 				</label>
 
 				<label>
 					Password:
-					<input type="password" v-model="password" required />
+					<input
+						type="password"
+						v-model="password"
+						:class="{ wronganimation: wrongPassword }"
+						required
+					/>
 				</label>
 
 				<input type="submit" value="Login" class="submit-btn" />
@@ -47,6 +57,9 @@ export default defineComponent({
 			password: "",
 			users: [] as User[],
 			sessions: [] as Session[],
+			wrongAnimationTime: 500,
+			wrongUsername: false,
+			wrongPassword: false,
 		};
 	},
 	methods: {
@@ -55,16 +68,18 @@ export default defineComponent({
 				(user) => user.username === this.username
 			);
 			if (!user) {
-				console.log(
-					"User with username '" + this.username + "' not found"
-				);
+				this.wrongUsername = true;
+				setTimeout(() => {
+					this.wrongUsername = false;
+				}, this.wrongAnimationTime);
 				return;
 			}
 
 			if (user.password !== this.password) {
-				console.log(
-					"Incorrect password for user '" + user.username + "'"
-				);
+				this.wrongPassword = true;
+				setTimeout(() => {
+					this.wrongPassword = false;
+				}, this.wrongAnimationTime);
 				return;
 			}
 
@@ -136,5 +151,28 @@ input {
 	margin: 1rem;
 	padding: 5px 1rem;
 	font-size: 1rem;
+}
+
+.wronganimation {
+	border-color: red;
+	animation: shake 0.2s;
+}
+
+@keyframes shake {
+	0% {
+		transform: translate(3px, 0px);
+	}
+	25% {
+		transform: translate(-3px, 0px);
+	}
+	50% {
+		transform: translate(3px, 0px);
+	}
+	75% {
+		transform: translate(-3px, 0px);
+	}
+	100% {
+		transform: translate(0px, 0px);
+	}
 }
 </style>
