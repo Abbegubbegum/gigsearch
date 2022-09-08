@@ -1,5 +1,4 @@
-## OBS OPEN TWO TERMINALS AND RUN 'NPM RUN SERVE-DB' AND 
-## 'NPM RUN DEV'
+## OBS OPEN TWO TERMINALS AND RUN 'npm run serve-db' AND 'npm run dev'
 
 
 # gigsearch
