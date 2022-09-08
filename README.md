@@ -1,3 +1,6 @@
+## OBS OPEN TWO TERMINALS AND RUN 'NPM RUN SERVE-DB' AND 'NPM RUN DEV'
+
+
 # gigsearch
 
 This template should help get you started developing with Vue 3 in Vite.
