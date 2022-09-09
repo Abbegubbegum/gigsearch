@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import { defineComponent } from "vue";
+import router from "@/router";
+import type { User } from "@/types";
+import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+</script>
+
 <template>
 	<div class="content-container">
 		<div class="login-box">
@@ -39,25 +46,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import {
-	createSession,
-	getSessions,
-	getUserFromSessionKey,
-	getUsers,
-	hash,
-} from "@/main";
-import router from "@/router";
-import type { Session, User } from "@/types";
-import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
-
 export default defineComponent({
 	data() {
 		return {
 			email: "",
 			password: "",
 			users: [] as User[],
-			sessions: [] as Session[],
 			wrongAnimationTime: 500,
 			wrongEmail: false,
 			wrongPassword: false,

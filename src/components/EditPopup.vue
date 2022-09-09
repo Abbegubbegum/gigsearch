@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import type { InstrumentWithID, User } from "@/types";
+import {
+	onSnapshot,
+	collection,
+	getFirestore,
+	GeoPoint,
+} from "@firebase/firestore";
+import { defineComponent } from "vue";
+import StarRating from "vue-star-rating";
+</script>
+
 <template>
 	<Transition name="modal">
 		<div v-if="show" class="modal-mask">
@@ -106,17 +118,6 @@
 </template>
 
 <script lang="ts">
-import { getInstruments } from "@/main";
-import type { Instrument, InstrumentWithID, User } from "@/types";
-import {
-	onSnapshot,
-	collection,
-	getFirestore,
-	GeoPoint,
-} from "@firebase/firestore";
-import { defineComponent } from "vue";
-import StarRating from "vue-star-rating";
-
 export default defineComponent({
 	data() {
 		return {
@@ -228,10 +229,6 @@ export default defineComponent({
 
 				this.instruments.push(instrument);
 			});
-		},
-		setRating(rating: number) {
-			console.log("Rating set: " + rating);
-			this.experienceRating = rating;
 		},
 
 		updateTooltipPosition(e: any) {

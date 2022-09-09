@@ -1,3 +1,27 @@
+<script setup lang="ts">
+import router from "@/router";
+import { defineComponent, capitalize } from "vue";
+import type {
+	Instrument,
+	InstrumentWithID,
+	User,
+	UserWithID,
+} from "@/types";
+import EditPopup from "../components/EditPopup.vue";
+import {
+	collection,
+	getFirestore,
+	onSnapshot,
+	getDoc,
+	doc,
+	DocumentReference,
+	type DocumentData,
+	setDoc,
+} from "@firebase/firestore";
+
+import { getAuth, onAuthStateChanged } from "@firebase/auth";
+</script>
+
 <template>
 	<div class="main-container">
 		<div class="content-container">
@@ -53,29 +77,6 @@
 </template>
 
 <script lang="ts">
-import router from "@/router";
-import { defineComponent, capitalize } from "vue";
-import type {
-	Instrument,
-	InstrumentWithID,
-	Session,
-	User,
-	UserWithID,
-} from "@/types";
-import EditPopup from "../components/EditPopup.vue";
-import {
-	collection,
-	getFirestore,
-	onSnapshot,
-	getDoc,
-	doc,
-	DocumentReference,
-	type DocumentData,
-	setDoc,
-} from "@firebase/firestore";
-
-import { getAuth, onAuthStateChanged } from "@firebase/auth";
-
 export default defineComponent({
 	data() {
 		return {
@@ -172,7 +173,6 @@ export default defineComponent({
 		}
 
 		const unsubUser = onSnapshot(this.userRef, (snapshot) => {
-			console.log("user update");
 			let data = snapshot.data();
 			if (data) {
 				this.user = {

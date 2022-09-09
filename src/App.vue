@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
+import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
 </script>
 
 <template>
@@ -38,8 +39,6 @@ import { defineComponent } from "vue";
 </template>
 
 <script lang="ts">
-import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
-
 export default defineComponent({
 	data() {
 		return {

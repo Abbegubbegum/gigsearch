@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { defineComponent } from "vue";
 import SearchBar from "../components/Search/SearchBar.vue";
-import type {
-	FilterOptions,
-	Instrument,
-	InstrumentWithID,
-	User,
-	UserWithID,
-} from "../types";
+import type { FilterOptions, InstrumentWithID, UserWithID } from "../types";
 import SearchItem from "../components/Search/SearchItem.vue";
-import { getInstruments, getUsers } from "../main";
 import router from "@/router";
 import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
@@ -84,7 +77,6 @@ export default defineComponent({
 			router.push(/search/ + this.searchBarValue);
 		},
 		handleSearch() {
-			console.log("search");
 			this.initialSearch = false;
 			this.search = this.searchBarValue;
 			//Empties filter options

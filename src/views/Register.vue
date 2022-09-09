@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import router from "@/router";
+import type { User} from "@/types";
+import { defineComponent } from "vue";
+import {
+	createUserWithEmailAndPassword,
+	getAuth,
+	GoogleAuthProvider,
+	signInWithPopup,
+	updateProfile,
+} from "firebase/auth";
+import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
+</script>
+
 <template>
 	<div class="content-container">
 		<form class="register-form" @submit.prevent="registerUser">
@@ -32,19 +46,6 @@
 </template>
 
 <script lang="ts">
-import { addUser, createSession, getSessions, getUsers } from "@/main";
-import router from "@/router";
-import type { User, Session, newUser } from "@/types";
-import { defineComponent } from "vue";
-import {
-	createUserWithEmailAndPassword,
-	getAuth,
-	GoogleAuthProvider,
-	signInWithPopup,
-	updateProfile,
-} from "firebase/auth";
-import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
-
 export default defineComponent({
 	data() {
 		return {
@@ -52,7 +53,6 @@ export default defineComponent({
 			email: "",
 			password: "",
 			users: [] as User[],
-			sessions: [] as Session[],
 		};
 	},
 	methods: {
@@ -109,10 +109,6 @@ export default defineComponent({
 					console.error(err);
 				});
 		},
-	},
-	async created() {
-		this.users = await getUsers();
-		this.sessions = await getSessions();
 	},
 });
 </script>

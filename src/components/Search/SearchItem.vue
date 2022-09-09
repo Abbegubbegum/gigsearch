@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import type { Instrument, InstrumentWithID, UserWithID } from "@/types";
+import { capitalize, defineComponent, type PropType } from "vue";
+import StarRating from "vue-star-rating";
+import router from "@/router";
+import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
+</script>
+
 <template>
 	<div class="item-container" @click="handleClick">
 		<div class="item-header">
@@ -60,13 +68,6 @@
 </template>
 
 <script lang="ts">
-import type { Instrument, InstrumentWithID, User, UserWithID } from "@/types";
-import { capitalize, defineComponent, type PropType } from "vue";
-import StarRating from "vue-star-rating";
-import { store } from "@/main";
-import router from "@/router";
-import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
-
 export default defineComponent({
 	data() {
 		return {
