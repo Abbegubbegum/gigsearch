@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import type { InstrumentWithID, User } from "@/types";
+import {
+	onSnapshot,
+	collection,
+	getFirestore,
+	GeoPoint,
+} from "@firebase/firestore";
+import { defineComponent } from "vue";
+import StarRating from "vue-star-rating";
+</script>
+
 <template>
 	<Transition name="modal">
 		<div v-if="show" class="modal-mask">
@@ -19,6 +31,25 @@
 								rows="5"
 								v-model="about"
 							></textarea>
+						</label>
+						<label>
+							<span>Experience Rating: </span>
+							<input
+								type="range"
+								min="0"
+								max="5"
+								step="0.5"
+								v-model="experienceRating"
+								@mousedown="showTooltip = true"
+								@mouseup="showTooltip = false"
+							/>
+							<div
+								class="tooltip"
+								v-if="showTooltip"
+								:style="{ top: tooltipTop, left: tooltipLeft }"
+							>
+								{{ experienceRating }}
+							</div>
 						</label>
 
 						<form @submit.prevent="handleStyleSubmit">
@@ -87,22 +118,22 @@
 </template>
 
 <script lang="ts">
-import { getInstruments } from "@/main";
-import type { Instrument, User } from "@/types";
-import { defineComponent } from "vue";
-
 export default defineComponent({
 	data() {
 		return {
 			user: {} as User,
 			name: "",
 			location: "",
-			experienceRating: "",
+			experienceRating: 0,
 			instrumentInput: "",
-			instruments: [] as Instrument[],
+			instruments: [] as InstrumentWithID[],
 			styleInput: "",
 			styles: [] as string[],
 			about: "",
+			allInstruments: [] as InstrumentWithID[],
+			showTooltip: false,
+			tooltipTop: "0",
+			tooltipLeft: "0",
 		};
 	},
 	methods: {
@@ -111,18 +142,15 @@ export default defineComponent({
 				(instrument) => instrument.id
 			);
 
-			console.log(instrumentIdList);
-
 			let user: User = {
-				id: 0,
-				username: "",
-				password: "",
 				name: this.name,
-				location: this.location,
+				email: "",
+				locationName: this.location,
+				locationCoord: new GeoPoint(0, 0),
 				styles: this.styles,
 				instruments: instrumentIdList,
 				likes: 0,
-				experienceRating: 0,
+				experienceRating: this.experienceRating,
 				about: this.about,
 			};
 
@@ -154,9 +182,7 @@ export default defineComponent({
 				return;
 			}
 
-			let allInstruments = await getInstruments();
-
-			let instrumentMatch = allInstruments.find(
+			let instrumentMatch = this.allInstruments.find(
 				(instrument) =>
 					instrument.name.toLowerCase() ===
 					this.instrumentInput.toLowerCase()
@@ -169,29 +195,7 @@ export default defineComponent({
 				return;
 			}
 		},
-		async setValues(user: User) {
-			let allInstruments = await getInstruments();
-
-			console.log("set values");
-			this.name = user.name;
-			this.location = user.location;
-			this.about = user.about;
-			this.styles = [...user.styles];
-
-			user.instruments.forEach((userInstrumentId) => {
-				let instrument = allInstruments.find(
-					(instrument) => instrument.id === userInstrumentId
-				);
-
-				if (!instrument) {
-					console.log("Instrument in user does not exist in db");
-					return;
-				}
-
-				this.instruments.push(instrument);
-			});
-		},
-		removeInstrument(instrument: Instrument) {
+		removeInstrument(instrument: InstrumentWithID) {
 			let index = this.instruments.indexOf(instrument);
 
 			if (index >= 0) {
@@ -205,9 +209,56 @@ export default defineComponent({
 				this.styles.splice(index, 1);
 			}
 		},
+		async setValues(user: User) {
+			this.name = user.name;
+			this.location = user.locationName;
+			this.about = user.about;
+			this.experienceRating = user.experienceRating;
+			this.styles = [...user.styles];
+			this.instruments = [];
+
+			user.instruments.forEach((userInstrumentId) => {
+				let instrument = this.allInstruments.find(
+					(instrument) => instrument.id === userInstrumentId
+				);
+
+				if (!instrument) {
+					console.log("Instrument in user does not exist in db");
+					return;
+				}
+
+				this.instruments.push(instrument);
+			});
+		},
+
+		updateTooltipPosition(e: any) {
+			this.tooltipTop = (e.layerY - 5).toString() + "px";
+			this.tooltipLeft = (e.layerX - 16).toString() + "px";
+		},
+	},
+	created() {
+		const unsubInstruments = onSnapshot(
+			collection(getFirestore(), "instruments"),
+			(snapshot) => {
+				let newInstruments: InstrumentWithID[] = [];
+				snapshot.forEach((doc) => {
+					newInstruments.push({
+						name: doc.data().name,
+						iconName: doc.data().iconName,
+						id: doc.id,
+					});
+				});
+				this.allInstruments = newInstruments;
+			}
+		);
+
+		window.onmousemove = this.updateTooltipPosition;
 	},
 	props: {
 		show: { type: Boolean, required: true },
+	},
+	components: {
+		StarRating,
 	},
 });
 </script>
@@ -248,6 +299,21 @@ export default defineComponent({
 
 span {
 	display: block;
+}
+
+.tooltip {
+	position: absolute;
+	width: 32px;
+	text-align: center;
+	font-size: 1rem;
+	font-weight: bold;
+	padding: 0.3rem;
+	background-color: white;
+	box-shadow: 3px 3px 5px black;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	border-bottom-left-radius: 25px;
+	border-bottom-right-radius: 25px;
 }
 
 /*

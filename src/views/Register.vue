@@ -1,15 +1,29 @@
+<script setup lang="ts">
+import router from "@/router";
+import type { User} from "@/types";
+import { defineComponent } from "vue";
+import {
+	createUserWithEmailAndPassword,
+	getAuth,
+	GoogleAuthProvider,
+	signInWithPopup,
+	updateProfile,
+} from "firebase/auth";
+import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
+</script>
+
 <template>
 	<div class="content-container">
-		<form class="register-form" @submit.prevent="handleRegister">
+		<form class="register-form" @submit.prevent="registerUser">
 			<label>
-				<span>Full Name:</span>
+				<span>Name:</span>
 				<input v-model="name" type="text" class="text-input" required />
 			</label>
 			<label>
-				<span>Username:</span>
+				<span>Email:</span>
 				<input
-					v-model="username"
-					type="text"
+					v-model="email"
+					type="email"
 					class="text-input"
 					required
 				/>
@@ -23,85 +37,78 @@
 					required
 				/>
 			</label>
-			<label>
-				<span>Confirm Password:</span>
-				<input
-					v-model="passwordConfirm"
-					type="password"
-					class="text-input"
-					required
-				/>
-			</label>
 			<input type="submit" value="Register" />
+			<button type="button" class="google-button" @click="googleSignIn">
+				Sign In With Google
+			</button>
 		</form>
 	</div>
 </template>
 
 <script lang="ts">
-import { addUser, createSession, getSessions, getUsers } from "@/main";
-import router from "@/router";
-import type { User, Session, newUser } from "@/types";
-import { defineComponent } from "vue";
-
 export default defineComponent({
 	data() {
 		return {
 			name: "",
-			username: "",
+			email: "",
 			password: "",
-			passwordConfirm: "",
 			users: [] as User[],
-			sessions: [] as Session[],
 		};
 	},
 	methods: {
-		async handleRegister() {
-			let user: newUser;
-
-			if (this.users.find((user) => user.username === this.username)) {
-				console.log("Username already registered " + this.username);
-				return;
-			}
-
-			if (this.password !== this.passwordConfirm) {
-				console.log("Passwords do not match");
-				return;
-			}
-
-			user = {
-				username: this.username,
-				password: this.password,
-				name: this.name,
-				likes: 0,
-				experienceRating: 0,
-				location: "",
-				instruments: [],
-				styles: [],
-				about: "",
-			};
-
-			await addUser(user);
-
-			this.users = await getUsers();
-
-			let userId = this.users.find(
-				(user) => user.username === this.username
-			)?.id;
-
-			if (userId) {
-				let sessionKey = await createSession(userId);
-				localStorage.setItem("sessionKey", sessionKey);
-				this.$emit("updateLogin");
-				router.push("/profile/" + userId);
-			} else {
-				console.error("Username registered but not found");
-				console.log(this.users, this.username);
-			}
+		registerUser() {
+			createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+				.then((res) => {
+					const user = getAuth().currentUser;
+					if (user) {
+						updateProfile(user, { displayName: this.name });
+						return setDoc(doc(getFirestore(), "users", user.uid), {
+							likes: 0,
+							experienceRating: 0,
+							locationCoord: new GeoPoint(0, 0),
+							locationName: "",
+							instruments: [],
+							styles: [],
+							about: "",
+							name: this.name,
+							email: this.email,
+						} as User);
+					}
+				})
+				.then(() => {
+					router.push("/");
+				})
+				.catch((err) => {
+					console.error(err);
+				});
 		},
-	},
-	async created() {
-		this.users = await getUsers();
-		this.sessions = await getSessions();
+
+		googleSignIn() {
+			signInWithPopup(getAuth(), new GoogleAuthProvider())
+				.then((res) => {
+					const user = getAuth().currentUser;
+					if (user) {
+						updateProfile(user, { displayName: this.name });
+						return setDoc(doc(getFirestore(), "users", user.uid), {
+							likes: 0,
+							experienceRating: 0,
+							locationCoord: new GeoPoint(0, 0),
+							locationName: "",
+							instruments: [],
+							styles: [],
+							about: "",
+							name: this.name,
+							email: this.email,
+						} as User);
+					}
+				})
+				.then(() => {
+					router.push("/");
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		},
 	},
 });
 </script>

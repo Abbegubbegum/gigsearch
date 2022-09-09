@@ -1,6 +1,3 @@
-## !!OBS!! OPEN TWO TERMINALS AND RUN 'npm run serve-db' AND 'npm run dev' TO RUN THE WEBSITE
-
-
 # gigsearch
 
 This template should help get you started developing with Vue 3 in Vite.

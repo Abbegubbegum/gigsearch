@@ -1,16 +1,23 @@
+<script setup lang="ts">
+import { defineComponent } from "vue";
+import router from "@/router";
+import type { User } from "@/types";
+import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+</script>
+
 <template>
 	<div class="content-container">
 		<div class="login-box">
 			<div class="login-header">
 				<h1>LOGIN</h1>
 			</div>
-			<form class="login-form" @submit.prevent="handleLogin">
+			<form class="login-form" @submit.prevent="loginUser">
 				<label>
-					Username:
+					Email:
 					<input
-						type="text"
-						v-model="username"
-						:class="{ wronganimation: wrongUsername }"
+						type="email"
+						v-model="email"
+						:class="{ wronganimation: wrongEmail }"
 						required
 					/>
 				</label>
@@ -39,71 +46,62 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import {
-	createSession,
-	getSessions,
-	getUserFromSessionKey,
-	getUsers,
-	hash,
-} from "@/main";
-import router from "@/router";
-import type { Session, User } from "@/types";
-
 export default defineComponent({
 	data() {
 		return {
-			username: "",
+			email: "",
 			password: "",
 			users: [] as User[],
-			sessions: [] as Session[],
 			wrongAnimationTime: 500,
-			wrongUsername: false,
+			wrongEmail: false,
 			wrongPassword: false,
 		};
 	},
 	methods: {
-		async handleLogin() {
-			let user = this.users.find(
-				(user) => user.username === this.username
-			);
-			if (!user) {
-				this.wrongUsername = true;
-				setTimeout(() => {
-					this.wrongUsername = false;
-				}, this.wrongAnimationTime);
-				return;
-			}
-
-			if (user.password !== this.password) {
-				this.wrongPassword = true;
-				setTimeout(() => {
-					this.wrongPassword = false;
-				}, this.wrongAnimationTime);
-				return;
-			}
-
-			let sessionKey = await createSession(user.id);
-			localStorage.setItem("sessionKey", sessionKey);
-			this.$emit("updateLogin");
-
-			router.push(`/profile/${user.id}`);
+		loginUser() {
+			signInWithEmailAndPassword(getAuth(), this.email, this.password)
+				.then((data) => {
+					console.log("Logged in successfully");
+					router.push("/");
+				})
+				.catch((err) => {
+					switch (err.code) {
+						case "auth/invalid-email":
+							this.wrongEmail = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+							}, this.wrongAnimationTime);
+							break;
+						case "auth/user-not-found":
+							this.wrongEmail = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+							}, this.wrongAnimationTime);
+							break;
+						case "auth/wrong-password":
+							this.wrongPassword = true;
+							setTimeout(() => {
+								this.wrongPassword = false;
+							}, this.wrongAnimationTime);
+							break;
+						default:
+							this.wrongEmail = true;
+							this.wrongPassword = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+								this.wrongPassword = false;
+							}, this.wrongAnimationTime);
+							break;
+					}
+				});
 		},
 	},
 	async created() {
-		this.sessions = await getSessions();
-		this.users = await getUsers();
-		let localsessionKey = localStorage.getItem("sessionKey");
-		if (!localsessionKey) return;
+		let authedUser = getAuth().currentUser;
 
-		let user = await getUserFromSessionKey(localsessionKey);
-
-		if (!user) {
-			localStorage.removeItem("sessionKey");
-			return;
+		if (authedUser) {
+			router.push("/profile/" + authedUser.uid);
 		}
-
-		router.push(`/profile/${user.id}`);
 	},
 });
 </script>

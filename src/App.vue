@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { defineComponent } from "vue";
-import { getUserFromSessionKey, getUsers, removeCurrentSession } from "./main";
-import type { User } from "./types";
-import router from "./router";
+import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
 </script>
 
 <template>
@@ -23,7 +21,7 @@ import router from "./router";
 				</RouterLink>
 				<div class="dropdown-content" v-if="showDropdown">
 					<RouterLink
-						:to="'/profile/' + authedId"
+						:to="'/profile/' + getAuth().currentUser?.uid"
 						class="dropdown-item"
 					>
 						Profile
@@ -35,7 +33,7 @@ import router from "./router";
 			</div>
 		</header>
 		<div>
-			<RouterView @update-login="updateLogin" />
+			<RouterView />
 		</div>
 	</div>
 </template>
@@ -47,8 +45,6 @@ export default defineComponent({
 			hideHeader: false,
 			lastScrollYUpdate: 0,
 			authed: false,
-			authedName: "",
-			authedId: "",
 			dropdownHover: false,
 		};
 	},
@@ -63,42 +59,18 @@ export default defineComponent({
 				this.lastScrollYUpdate = window.scrollY;
 			}
 		},
-		async updateLogin() {
-			let sessionKey = localStorage.getItem("sessionKey");
-
-			if (!sessionKey) {
-				this.authed = false;
-				return;
-			}
-
-			let authUser = await getUserFromSessionKey(sessionKey);
-
-			if (!authUser) {
-				localStorage.removeItem("sessionKey");
-				this.authed = false;
-				return;
-			}
-
-			this.authed = true;
-			this.authedName = authUser.name;
-			this.authedId = authUser.id.toString();
-		},
 		logout() {
-			this.authed = false;
-			this.authedName = "";
-			this.authedId = "";
-
-			removeCurrentSession();
-
-			router.push("/");
+			signOut(getAuth());
 		},
 	},
 	computed: {
 		profileButtonLink() {
-			return this.authed ? "/profile/" + this.authedId : "/login";
+			return this.authed
+				? "/profile/" + getAuth().currentUser?.uid
+				: "/login";
 		},
 		profileButtonLabel() {
-			return this.authed ? this.authedName : "Login";
+			return this.authed ? getAuth().currentUser?.displayName : "Login";
 		},
 		showDropdown() {
 			return this.dropdownHover && this.authed;
@@ -106,7 +78,13 @@ export default defineComponent({
 	},
 	created() {
 		window.onscroll = this.handleScroll;
-		this.updateLogin();
+		onAuthStateChanged(getAuth(), (user) => {
+			if (user) {
+				this.authed = true;
+			} else {
+				this.authed = false;
+			}
+		});
 	},
 });
 </script>
