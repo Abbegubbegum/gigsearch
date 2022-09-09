@@ -97,7 +97,7 @@ export default defineComponent({
 			return this.authed ? "/profile/" + this.authedId : "/login";
 		},
 		profileButtonLabel() {
-			return this.authed ? this.auth.currentUser?.email : "Login";
+			return this.authed ? this.auth.currentUser?.displayName : "Login";
 		},
 		showDropdown() {
 			return this.dropdownHover && this.authed;

@@ -62,8 +62,15 @@ import {
 } from "@/main";
 import router from "@/router";
 import { defineComponent, capitalize } from "vue";
-import type { Instrument, Session, User } from "@/types";
+import type { Instrument, InstrumentWithID, Session, User } from "@/types";
 import EditPopup from "../components/EditPopup.vue";
+import {
+	collection,
+	getFirestore,
+	onSnapshot,
+	getDoc,
+	doc,
+} from "@firebase/firestore";
 
 export default defineComponent({
 	data() {
@@ -71,7 +78,7 @@ export default defineComponent({
 			user: {} as User,
 			authedUser: false,
 			editPopupShow: false,
-			instruments: [] as Instrument[],
+			instruments: [] as InstrumentWithID[],
 		};
 	},
 	methods: {
@@ -95,26 +102,50 @@ export default defineComponent({
 
 			this.editPopupShow = false;
 		},
+
+		getInstrument(instrumentID: string): Instrument {
+			let instrument = this.instruments.find(
+				(instrument) => instrument.id === instrumentID
+			);
+
+			return (
+				instrument ||
+				({ name: "Undefined", iconName: "" } as Instrument)
+			);
+		},
 	},
 	async created() {
-		this.instruments = await getInstruments();
+		const unsub = onSnapshot(
+			collection(getFirestore(), "instruments"),
+			(snapshot) => {
+				let newInstruments: InstrumentWithID[] = [];
+				snapshot.forEach((doc) => {
+					newInstruments.push({
+						name: doc.data().name,
+						iconName: doc.data().iconName,
+						id: doc.id,
+					});
+				});
+				this.instruments = newInstruments;
+			}
+		);
 
-		let res = await getUser(parseInt(this.$route.params.uid.toString()));
-		if (!res) {
-			router.push("/404");
-			return;
-		}
-		this.user = res;
-		let localsessionKey = localStorage.getItem("sessionKey");
-		if (!localsessionKey) return;
-		let authedUser = await getUserFromSessionKey(localsessionKey);
-		if (!authedUser) {
-			localStorage.removeItem("sessionKey");
-			return;
-		}
-		if (authedUser.id === this.user.id) {
-			this.authedUser = true;
-		}
+		// let res = await getUser(parseInt(this.$route.params.uid.toString()));
+		// if (!res) {
+		// 	router.push("/404");
+		// 	return;
+		// }
+		// this.user = res;
+		// let localsessionKey = localStorage.getItem("sessionKey");
+		// if (!localsessionKey) return;
+		// let authedUser = await getUserFromSessionKey(localsessionKey);
+		// if (!authedUser) {
+		// 	localStorage.removeItem("sessionKey");
+		// 	return;
+		// }
+		// if (authedUser.id === this.user.id) {
+		// 	this.authedUser = true;
+		// }
 	},
 	components: { EditPopup },
 });

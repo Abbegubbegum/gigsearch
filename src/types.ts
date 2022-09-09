@@ -24,9 +24,12 @@ export interface newUser {
 }
 
 export interface Instrument {
-	id: number;
 	name: string;
 	iconName: string;
+}
+
+export interface InstrumentWithID extends Instrument {
+	id: string;
 }
 
 export interface FilterOptions {

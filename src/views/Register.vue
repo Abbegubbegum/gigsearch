@@ -2,6 +2,10 @@
 	<div class="content-container">
 		<form class="register-form" @submit.prevent="registerUser">
 			<label>
+				<span>Name:</span>
+				<input v-model="name" type="text" class="text-input" required />
+			</label>
+			<label>
 				<span>Email:</span>
 				<input
 					v-model="email"
@@ -37,7 +41,9 @@ import {
 	getAuth,
 	GoogleAuthProvider,
 	signInWithPopup,
+	updateProfile,
 } from "firebase/auth";
+import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
 
 export default defineComponent({
 	data() {
@@ -45,7 +51,6 @@ export default defineComponent({
 			name: "",
 			email: "",
 			password: "",
-			passwordConfirm: "",
 			users: [] as User[],
 			sessions: [] as Session[],
 		};
@@ -53,16 +58,6 @@ export default defineComponent({
 	methods: {
 		async handleRegister() {
 			let user: newUser;
-
-			if (this.users.find((user) => user.username === this.email)) {
-				console.log("Username already registered " + this.email);
-				return;
-			}
-
-			if (this.password !== this.passwordConfirm) {
-				console.log("Passwords do not match");
-				return;
-			}
 
 			user = {
 				username: this.email,
@@ -97,8 +92,23 @@ export default defineComponent({
 
 		registerUser() {
 			createUserWithEmailAndPassword(getAuth(), this.email, this.password)
-				.then((data) => {
-					console.log("Success");
+				.then((res) => {
+					const user = getAuth().currentUser;
+					if (user) {
+						updateProfile(user, { displayName: this.name });
+						return setDoc(doc(getFirestore(), "users", user.uid), {
+							likes: 0,
+							experienceRating: 0,
+							locationCoord: new GeoPoint(0, 0),
+							locationName: "",
+							instruments: [],
+							styles: [],
+							about: "",
+							name: this.name,
+						});
+					}
+				})
+				.then(() => {
 					router.push("/");
 				})
 				.catch((err) => {
@@ -108,8 +118,23 @@ export default defineComponent({
 
 		googleSignIn() {
 			signInWithPopup(getAuth(), new GoogleAuthProvider())
-				.then((result) => {
-					console.log(result.user);
+				.then((res) => {
+					const user = getAuth().currentUser;
+					if (user) {
+						updateProfile(user, { displayName: this.name });
+						return setDoc(doc(getFirestore(), "users", user.uid), {
+							likes: 0,
+							experienceRating: 0,
+							locationCoord: new GeoPoint(0, 0),
+							locationName: "",
+							instruments: [],
+							styles: [],
+							about: "",
+							name: this.name,
+						});
+					}
+				})
+				.then(() => {
 					router.push("/");
 				})
 				.catch((err) => {

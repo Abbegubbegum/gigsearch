@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { defineComponent } from "vue";
 import SearchBar from "../components/Search/SearchBar.vue";
-import type { FilterOptions, Instrument, User } from "../types";
+import type {
+	FilterOptions,
+	Instrument,
+	InstrumentWithID,
+	User,
+} from "../types";
 import SearchItem from "../components/Search/SearchItem.vue";
 import { getInstruments, getUsers } from "../main";
 import router from "@/router";
@@ -55,7 +60,7 @@ export default defineComponent({
 			//Users matching both the search and the filter
 			filteredUsers: [] as User[],
 			//Instruments matching the search
-			searchedInstruments: [] as Instrument[],
+			searchedInstruments: [] as InstrumentWithID[],
 			//The filter options that are displayed in the filter section
 			availableFilterOptions: {
 				styles: [],
@@ -69,7 +74,7 @@ export default defineComponent({
 			} as FilterOptions,
 			currentSort: "",
 			users: [] as User[],
-			instruments: [] as Instrument[],
+			instruments: [] as InstrumentWithID[],
 		};
 	},
 	methods: {
