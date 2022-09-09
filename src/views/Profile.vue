@@ -4,14 +4,14 @@
 			<div class="profile-header">
 				<div class="name-title">
 					<h1>{{ capitalize(user.name) }}</h1>
-					<h2>@{{ user.username }}</h2>
+					<h2>{{ user.email }}</h2>
 					<h2 class="location-text">
 						<img
 							src="@/assets/icons/map-pin.svg"
 							alt="Map pin icon"
 							width="17"
 						/>
-						{{ user.location }}
+						{{ user.locationName }}
 					</h2>
 				</div>
 				<button v-if="authedUser" type="button" @click="showPopup">
@@ -29,7 +29,7 @@
 					<h3>Instruments</h3>
 					<ul>
 						<li v-for="instrumentID in user.instruments">
-							{{ capitalize(instruments[instrumentID].name) }}
+							{{ capitalize(getInstrument(instrumentID).name) }}
 						</li>
 					</ul>
 				</div>
@@ -53,16 +53,15 @@
 </template>
 
 <script lang="ts">
-import {
-	getInstruments,
-	getSessions,
-	getUser,
-	getUserFromSessionKey,
-	putUser,
-} from "@/main";
 import router from "@/router";
 import { defineComponent, capitalize } from "vue";
-import type { Instrument, InstrumentWithID, Session, User } from "@/types";
+import type {
+	Instrument,
+	InstrumentWithID,
+	Session,
+	User,
+	UserWithID,
+} from "@/types";
 import EditPopup from "../components/EditPopup.vue";
 import {
 	collection,
@@ -70,15 +69,21 @@ import {
 	onSnapshot,
 	getDoc,
 	doc,
+	DocumentReference,
+	type DocumentData,
+	setDoc,
 } from "@firebase/firestore";
+
+import { getAuth, onAuthStateChanged } from "@firebase/auth";
 
 export default defineComponent({
 	data() {
 		return {
-			user: {} as User,
+			user: {} as UserWithID,
 			authedUser: false,
 			editPopupShow: false,
 			instruments: [] as InstrumentWithID[],
+			userRef: {} as DocumentReference<DocumentData>,
 		};
 	},
 	methods: {
@@ -93,12 +98,26 @@ export default defineComponent({
 		},
 		handleEdit(newUser: User) {
 			this.user.name = newUser.name;
-			this.user.location = newUser.location;
+			this.user.locationName = newUser.locationName;
+			this.user.locationCoord = newUser.locationCoord;
 			this.user.about = newUser.about;
 			this.user.styles = [...newUser.styles];
 			this.user.instruments = [...newUser.instruments];
+			this.user.experienceRating = newUser.experienceRating;
 
-			putUser(this.user);
+			let updateUser: User = {
+				name: this.user.name,
+				email: this.user.email,
+				locationName: this.user.locationName,
+				locationCoord: this.user.locationCoord,
+				about: this.user.about,
+				styles: this.user.styles,
+				instruments: this.user.instruments,
+				experienceRating: this.user.experienceRating,
+				likes: this.user.likes,
+			};
+
+			setDoc(this.userRef, updateUser);
 
 			this.editPopupShow = false;
 		},
@@ -115,7 +134,63 @@ export default defineComponent({
 		},
 	},
 	async created() {
-		const unsub = onSnapshot(
+		this.userRef = doc(
+			getFirestore(),
+			"users",
+			this.$route.params.uid.toString()
+		);
+
+		let snapshot = await getDoc(this.userRef).catch((err) => {
+			console.error(err);
+			router.push("/");
+			return;
+		});
+
+		if (!snapshot || !snapshot.exists()) {
+			router.push("/404");
+			return;
+		}
+
+		let data = snapshot.data();
+		if (data) {
+			this.user = {
+				id: snapshot.id,
+				name: data.name,
+				email: data.email,
+				likes: data.likes,
+				experienceRating: data.experienceRating,
+				locationName: data.locationName,
+				locationCoord: data.locationCoord,
+				instruments: data.instruments,
+				styles: data.styles,
+				about: data.about,
+			};
+		}
+
+		if (getAuth().currentUser?.uid === snapshot.id) {
+			this.authedUser = true;
+		}
+
+		const unsubUser = onSnapshot(this.userRef, (snapshot) => {
+			console.log("user update");
+			let data = snapshot.data();
+			if (data) {
+				this.user = {
+					id: snapshot.id,
+					name: data.name,
+					email: data.email,
+					likes: data.likes,
+					experienceRating: data.experienceRating,
+					locationName: data.locationName,
+					locationCoord: data.locationCoord,
+					instruments: data.instruments,
+					styles: data.styles,
+					about: data.about,
+				};
+			}
+		});
+
+		const unsubInstruments = onSnapshot(
 			collection(getFirestore(), "instruments"),
 			(snapshot) => {
 				let newInstruments: InstrumentWithID[] = [];
@@ -126,26 +201,18 @@ export default defineComponent({
 						id: doc.id,
 					});
 				});
-				this.instruments = newInstruments;
+				this.instruments = [...newInstruments];
 			}
 		);
 
-		// let res = await getUser(parseInt(this.$route.params.uid.toString()));
-		// if (!res) {
-		// 	router.push("/404");
-		// 	return;
-		// }
-		// this.user = res;
-		// let localsessionKey = localStorage.getItem("sessionKey");
-		// if (!localsessionKey) return;
-		// let authedUser = await getUserFromSessionKey(localsessionKey);
-		// if (!authedUser) {
-		// 	localStorage.removeItem("sessionKey");
-		// 	return;
-		// }
-		// if (authedUser.id === this.user.id) {
-		// 	this.authedUser = true;
-		// }
+		const unsubAuth = onAuthStateChanged(getAuth(), (authedUser) => {
+			if (authedUser?.uid === this.user.id) {
+				this.authedUser = true;
+				return;
+			}
+
+			this.authedUser = false;
+		});
 	},
 	components: { EditPopup },
 });

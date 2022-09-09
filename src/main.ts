@@ -86,10 +86,6 @@ export async function addUser(user: newUser) {
 	await axios.post(store.apiURL + "users", user);
 }
 
-export async function putUser(user: User) {
-	await axios.put(store.apiURL + "users/" + user.id, user);
-}
-
 export async function createSession(userId: number): Promise<string> {
 	let sessions = await getSessions();
 
@@ -118,22 +114,6 @@ export async function createSession(userId: number): Promise<string> {
 	return session.sessionKey;
 }
 
-export async function removeCurrentSession() {
-	let sessionKey = localStorage.getItem("sessionKey");
-
-	if (!sessionKey) return;
-
-	let user = await getUserFromSessionKey(sessionKey);
-
-	if (!user) {
-		localStorage.removeItem("sessionKey");
-
-		return;
-	}
-
-	await axios.delete(store.apiURL + "sessions/" + user.id);
-	localStorage.removeItem("sessionKey");
-}
 
 export async function hash(val: string): Promise<string> {
 	let data = new TextEncoder().encode(val);

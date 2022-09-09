@@ -6,7 +6,7 @@
 					<img
 						:src="
 							'/src/assets/icons/' +
-							store.instruments[user.instruments[0]].iconName
+							getInstrument(user.instruments[0]).iconName
 						"
 						alt="Instrument Icon"
 						height="30"
@@ -31,7 +31,7 @@
 						alt="Map pin icon"
 						width="25"
 					/>
-					<span class="location-text">{{ user.location }}</span>
+					<span class="location-text">{{ user.locationName }}</span>
 				</div>
 				<div class="likes-container">{{ user.likes }}👍</div>
 			</div>
@@ -43,7 +43,7 @@
 						v-for="instrumentID in user.instruments"
 						class="instrument"
 					>
-						{{ capitalize(store.instruments[instrumentID].name) }}
+						{{ capitalize(getInstrument(instrumentID).name) }}
 					</li>
 				</ul>
 				<ul class="styles-container">
@@ -60,21 +60,22 @@
 </template>
 
 <script lang="ts">
-import type { Instrument, User } from "@/types";
+import type { Instrument, InstrumentWithID, User, UserWithID } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
 import StarRating from "vue-star-rating";
 import { store } from "@/main";
 import router from "@/router";
+import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
 
 export default defineComponent({
 	data() {
 		return {
-			store,
+			instruments: [] as InstrumentWithID[],
 		};
 	},
 	props: {
 		user: {
-			type: Object as PropType<User>,
+			type: Object as PropType<UserWithID>,
 			required: true,
 		},
 	},
@@ -83,9 +84,35 @@ export default defineComponent({
 		handleClick() {
 			router.push("/profile/" + this.user.id);
 		},
+		getInstrument(instrumentID: string): Instrument {
+			let instrument = this.instruments.find(
+				(instrument) => instrument.id === instrumentID
+			);
+
+			return (
+				instrument ||
+				({ name: "Undefined", iconName: "" } as Instrument)
+			);
+		},
 	},
 	components: {
 		StarRating,
+	},
+	created() {
+		const unsubInstruments = onSnapshot(
+			collection(getFirestore(), "instruments"),
+			(snapshot) => {
+				let newInstruments: InstrumentWithID[] = [];
+				snapshot.forEach((doc) => {
+					newInstruments.push({
+						name: doc.data().name,
+						iconName: doc.data().iconName,
+						id: doc.id,
+					});
+				});
+				this.instruments = [...newInstruments];
+			}
+		);
 	},
 });
 </script>

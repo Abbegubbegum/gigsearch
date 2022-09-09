@@ -64,31 +64,6 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		async handleLogin() {
-			let user = this.users.find((user) => user.username === this.email);
-			if (!user) {
-				this.wrongEmail = true;
-				setTimeout(() => {
-					this.wrongEmail = false;
-				}, this.wrongAnimationTime);
-				return;
-			}
-
-			if (user.password !== this.password) {
-				this.wrongPassword = true;
-				setTimeout(() => {
-					this.wrongPassword = false;
-				}, this.wrongAnimationTime);
-				return;
-			}
-
-			let sessionKey = await createSession(user.id);
-			localStorage.setItem("sessionKey", sessionKey);
-			this.$emit("updateLogin");
-
-			router.push(`/profile/${user.id}`);
-		},
-
 		loginUser() {
 			signInWithEmailAndPassword(getAuth(), this.email, this.password)
 				.then((data) => {
@@ -128,19 +103,11 @@ export default defineComponent({
 		},
 	},
 	async created() {
-		this.sessions = await getSessions();
-		this.users = await getUsers();
-		let localsessionKey = localStorage.getItem("sessionKey");
-		if (!localsessionKey) return;
+		let authedUser = getAuth().currentUser;
 
-		let user = await getUserFromSessionKey(localsessionKey);
-
-		if (!user) {
-			localStorage.removeItem("sessionKey");
-			return;
+		if (authedUser) {
+			router.push("/profile/" + authedUser.uid);
 		}
-
-		router.push(`/profile/${user.id}`);
 	},
 });
 </script>

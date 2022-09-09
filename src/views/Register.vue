@@ -56,40 +56,6 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		async handleRegister() {
-			let user: newUser;
-
-			user = {
-				username: this.email,
-				password: this.password,
-				name: this.name,
-				likes: 0,
-				experienceRating: 0,
-				location: "",
-				instruments: [],
-				styles: [],
-				about: "",
-			};
-
-			await addUser(user);
-
-			this.users = await getUsers();
-
-			let userId = this.users.find(
-				(user) => user.username === this.email
-			)?.id;
-
-			if (userId) {
-				let sessionKey = await createSession(userId);
-				localStorage.setItem("sessionKey", sessionKey);
-				this.$emit("updateLogin");
-				router.push("/profile/" + userId);
-			} else {
-				console.error("Username registered but not found");
-				console.log(this.users, this.email);
-			}
-		},
-
 		registerUser() {
 			createUserWithEmailAndPassword(getAuth(), this.email, this.password)
 				.then((res) => {
@@ -105,7 +71,8 @@ export default defineComponent({
 							styles: [],
 							about: "",
 							name: this.name,
-						});
+							email: this.email,
+						} as User);
 					}
 				})
 				.then(() => {
@@ -131,7 +98,8 @@ export default defineComponent({
 							styles: [],
 							about: "",
 							name: this.name,
-						});
+							email: this.email,
+						} as User);
 					}
 				})
 				.then(() => {

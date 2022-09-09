@@ -6,12 +6,14 @@ import type {
 	Instrument,
 	InstrumentWithID,
 	User,
+	UserWithID,
 } from "../types";
 import SearchItem from "../components/Search/SearchItem.vue";
 import { getInstruments, getUsers } from "../main";
 import router from "@/router";
 import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
+import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
 </script>
 
 <template>
@@ -21,7 +23,7 @@ import SortDropdown from "../components/SortDropdown.vue";
 			:class="{ initialSearch: initialSearch }"
 		>
 			<SearchBar
-				@on-submit="handleSearch"
+				@on-submit="setSearch"
 				:value="searchBarValue"
 				@on-input="(val: string) => {searchBarValue = val;}"
 				class="searchbar"
@@ -56,9 +58,9 @@ export default defineComponent({
 			//The value of the search bar
 			searchBarValue: "",
 			//Users matching the search
-			searchedUsers: [] as User[],
+			searchedUsers: [] as UserWithID[],
 			//Users matching both the search and the filter
-			filteredUsers: [] as User[],
+			filteredUsers: [] as UserWithID[],
 			//Instruments matching the search
 			searchedInstruments: [] as InstrumentWithID[],
 			//The filter options that are displayed in the filter section
@@ -73,20 +75,21 @@ export default defineComponent({
 				locations: [],
 			} as FilterOptions,
 			currentSort: "",
-			users: [] as User[],
+			users: [] as UserWithID[],
 			instruments: [] as InstrumentWithID[],
 		};
 	},
 	methods: {
+		setSearch() {
+			router.push(/search/ + this.searchBarValue);
+		},
 		handleSearch() {
+			console.log("search");
 			this.initialSearch = false;
 			this.search = this.searchBarValue;
 			//Empties filter options
 			this.availableFilterOptions.styles = [];
 			this.availableFilterOptions.locations = [];
-
-			//Updates params
-			router.push(/search/ + this.search);
 
 			this.createFilteredDataBySearch();
 
@@ -132,10 +135,13 @@ export default defineComponent({
 				});
 				if (
 					!this.availableFilterOptions.locations?.find(
-						(existingLocation) => existingLocation === user.location
+						(existingLocation) =>
+							existingLocation === user.locationName
 					)
 				) {
-					this.availableFilterOptions.locations?.push(user.location);
+					this.availableFilterOptions.locations?.push(
+						user.locationName
+					);
 				}
 			});
 		},
@@ -210,7 +216,7 @@ export default defineComponent({
 			) {
 				this.filteredUsers = this.filteredUsers.filter((user) =>
 					this.currentFilter.locations?.find(
-						(filterLocation) => filterLocation === user.location
+						(filterLocation) => filterLocation === user.locationName
 					)
 				);
 			}
@@ -274,9 +280,46 @@ export default defineComponent({
 		},
 	},
 	async mounted() {
+		const unsubUser = onSnapshot(
+			collection(getFirestore(), "users"),
+			(snapshot) => {
+				let newUsers: UserWithID[] = [];
+				snapshot.forEach((userSnapshot) => {
+					let data = userSnapshot.data();
+					if (data) {
+						newUsers.push({
+							id: userSnapshot.id,
+							name: data.name,
+							email: data.email,
+							likes: data.likes,
+							experienceRating: data.experienceRating,
+							locationName: data.locationName,
+							locationCoord: data.locationCoord,
+							instruments: data.instruments,
+							styles: data.styles,
+							about: data.about,
+						});
+					}
+				});
+				this.users = [...newUsers];
+			}
+		);
+
+		const unsubInstruments = onSnapshot(
+			collection(getFirestore(), "instruments"),
+			(snapshot) => {
+				let newInstruments: InstrumentWithID[] = [];
+				snapshot.forEach((doc) => {
+					newInstruments.push({
+						name: doc.data().name,
+						iconName: doc.data().iconName,
+						id: doc.id,
+					});
+				});
+				this.instruments = [...newInstruments];
+			}
+		);
 		this.handleParams();
-		this.users = await getUsers();
-		this.instruments = await getInstruments();
 	},
 	watch: {
 		$route(to, from) {
