@@ -41,6 +41,9 @@ import router from "./router";
 </template>
 
 <script lang="ts">
+import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
+import type { Auth } from "@firebase/auth";
+
 export default defineComponent({
 	data() {
 		return {
@@ -50,6 +53,7 @@ export default defineComponent({
 			authedName: "",
 			authedId: "",
 			dropdownHover: false,
+			auth: {} as Auth,
 		};
 	},
 	methods: {
@@ -84,12 +88,7 @@ export default defineComponent({
 			this.authedId = authUser.id.toString();
 		},
 		logout() {
-			this.authed = false;
-			this.authedName = "";
-			this.authedId = "";
-
-			removeCurrentSession();
-
+			signOut(getAuth());
 			router.push("/");
 		},
 	},
@@ -98,7 +97,7 @@ export default defineComponent({
 			return this.authed ? "/profile/" + this.authedId : "/login";
 		},
 		profileButtonLabel() {
-			return this.authed ? this.authedName : "Login";
+			return this.authed ? this.auth.currentUser?.email : "Login";
 		},
 		showDropdown() {
 			return this.dropdownHover && this.authed;
@@ -106,7 +105,14 @@ export default defineComponent({
 	},
 	created() {
 		window.onscroll = this.handleScroll;
-		this.updateLogin();
+		this.auth = getAuth();
+		onAuthStateChanged(this.auth, (user) => {
+			if (user) {
+				this.authed = true;
+			} else {
+				this.authed = false;
+			}
+		});
 	},
 });
 </script>

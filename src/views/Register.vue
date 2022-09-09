@@ -1,15 +1,11 @@
 <template>
 	<div class="content-container">
-		<form class="register-form" @submit.prevent="handleRegister">
+		<form class="register-form" @submit.prevent="registerUser">
 			<label>
-				<span>Full Name:</span>
-				<input v-model="name" type="text" class="text-input" required />
-			</label>
-			<label>
-				<span>Username:</span>
+				<span>Email:</span>
 				<input
-					v-model="username"
-					type="text"
+					v-model="email"
+					type="email"
 					class="text-input"
 					required
 				/>
@@ -23,16 +19,10 @@
 					required
 				/>
 			</label>
-			<label>
-				<span>Confirm Password:</span>
-				<input
-					v-model="passwordConfirm"
-					type="password"
-					class="text-input"
-					required
-				/>
-			</label>
 			<input type="submit" value="Register" />
+			<button type="button" class="google-button" @click="googleSignIn">
+				Sign In With Google
+			</button>
 		</form>
 	</div>
 </template>
@@ -42,12 +32,18 @@ import { addUser, createSession, getSessions, getUsers } from "@/main";
 import router from "@/router";
 import type { User, Session, newUser } from "@/types";
 import { defineComponent } from "vue";
+import {
+	createUserWithEmailAndPassword,
+	getAuth,
+	GoogleAuthProvider,
+	signInWithPopup,
+} from "firebase/auth";
 
 export default defineComponent({
 	data() {
 		return {
 			name: "",
-			username: "",
+			email: "",
 			password: "",
 			passwordConfirm: "",
 			users: [] as User[],
@@ -58,8 +54,8 @@ export default defineComponent({
 		async handleRegister() {
 			let user: newUser;
 
-			if (this.users.find((user) => user.username === this.username)) {
-				console.log("Username already registered " + this.username);
+			if (this.users.find((user) => user.username === this.email)) {
+				console.log("Username already registered " + this.email);
 				return;
 			}
 
@@ -69,7 +65,7 @@ export default defineComponent({
 			}
 
 			user = {
-				username: this.username,
+				username: this.email,
 				password: this.password,
 				name: this.name,
 				likes: 0,
@@ -85,7 +81,7 @@ export default defineComponent({
 			this.users = await getUsers();
 
 			let userId = this.users.find(
-				(user) => user.username === this.username
+				(user) => user.username === this.email
 			)?.id;
 
 			if (userId) {
@@ -95,8 +91,30 @@ export default defineComponent({
 				router.push("/profile/" + userId);
 			} else {
 				console.error("Username registered but not found");
-				console.log(this.users, this.username);
+				console.log(this.users, this.email);
 			}
+		},
+
+		registerUser() {
+			createUserWithEmailAndPassword(getAuth(), this.email, this.password)
+				.then((data) => {
+					console.log("Success");
+					router.push("/");
+				})
+				.catch((err) => {
+					console.error(err);
+				});
+		},
+
+		googleSignIn() {
+			signInWithPopup(getAuth(), new GoogleAuthProvider())
+				.then((result) => {
+					console.log(result.user);
+					router.push("/");
+				})
+				.catch((err) => {
+					console.error(err);
+				});
 		},
 	},
 	async created() {

@@ -6,6 +6,24 @@ import { reactive } from "vue";
 import instruments from "./assets/instruments.json";
 import type { User, Instrument, Session, newUser } from "./types";
 import axios, { type AxiosResponse } from "axios";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+const firebaseConfig = {
+	apiKey: "AIzaSyDBZXix-BZGLOcRYvl8e7sc46ZTDNyM_ck",
+	authDomain: "gigsearch-b3ae7.firebaseapp.com",
+	projectId: "gigsearch-b3ae7",
+	storageBucket: "gigsearch-b3ae7.appspot.com",
+	messagingSenderId: "309932126295",
+	appId: "1:309932126295:web:d2795c74da1aef79557312",
+	measurementId: "G-LP1N9488PN",
+};
+
+initializeApp(firebaseConfig);
+// const analytics = getAnalytics(firebaseapp);
 
 export const store = reactive({
 	apiURL: "http://localhost:3000/",
