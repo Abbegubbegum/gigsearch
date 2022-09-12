@@ -7,4 +7,4 @@
 [] "Build a Band" page
 [] Login page
 - [] Google sign-in
-[] Fireabase hosting
+[] Firebase hosting

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { decodeGeopoint, encodeLocation } from "@/main";
 import type { Instrument, InstrumentWithID, User } from "@/types";
 import {
 	onSnapshot,
@@ -22,10 +23,22 @@ import { defineComponent } from "vue";
 							<span>Name</span>
 							<input type="text" v-model="name" required />
 						</label>
-						<label>
-							<span>Location</span>
-							<input type="text" v-model="location" />
-						</label>
+						<div class="location-container">
+							<label>
+								<span>Location</span>
+								<input
+									type="text"
+									v-model="locationName"
+									placeholder="Stockholm, Sweden"
+								/>
+								<p class="message" v-if="locationError">
+									{{ locationMessage }}
+								</p>
+							</label>
+							<button class="location-btn" @click="getLocation">
+								Get My Location
+							</button>
+						</div>
 						<label>
 							<span>About</span>
 							<textarea
@@ -125,7 +138,11 @@ export default defineComponent({
 		return {
 			user: {} as User,
 			name: "",
-			location: "",
+			locationName: "",
+			locationCoords: {} as GeoPoint,
+			locationMessage: "",
+			locationError: false,
+			locationFormat: /(\w+), (\w+)/,
 			experienceRating: 0,
 			instrumentInput: "",
 			instruments: [] as InstrumentWithID[],
@@ -139,16 +156,25 @@ export default defineComponent({
 		};
 	},
 	methods: {
-		handleFullSubmit() {
+		async handleFullSubmit() {
 			let instrumentIdList = this.instruments.map(
 				(instrument) => instrument.id
 			);
 
+			let match = this.locationName.match(this.locationFormat);
+
+			if (!match?.length) {
+				alert("Invalid location format, unable to submit");
+				return;
+			}
+
+			this.locationCoords = await encodeLocation(match[0], match[1]);
+
 			let user: User = {
 				name: this.name,
 				email: "",
-				locationName: this.location,
-				locationCoord: new GeoPoint(0, 0),
+				locationName: this.locationName,
+				locationCoord: this.locationCoords,
 				styles: this.styles,
 				instruments: instrumentIdList,
 				likes: 0,
@@ -170,7 +196,7 @@ export default defineComponent({
 				this.styles.push(this.styleInput);
 			}
 		},
-		async handleInstrumentSubmit() {
+		handleInstrumentSubmit() {
 			this.instrumentInput = this.instrumentInput.trim();
 
 			if (
@@ -217,7 +243,7 @@ export default defineComponent({
 					let data = snapshot.data();
 					if (data) {
 						this.name = data.name;
-						this.location = data.locationName;
+						this.locationName = data.locationName;
 						this.about = data.about;
 						this.experienceRating = data.experienceRating;
 						this.styles = [...data.styles];
@@ -247,6 +273,28 @@ export default defineComponent({
 			this.tooltipTop = (e.layerY - 5).toString() + "px";
 			this.tooltipLeft = (e.layerX - 16).toString() + "px";
 		},
+		async getLocation() {
+			if (!navigator.geolocation) {
+				alert("Browser does not support geolocation");
+			}
+
+			navigator.geolocation.getCurrentPosition(
+				(pos) => {
+					this.locationCoords = new GeoPoint(
+						pos.coords.latitude,
+						pos.coords.longitude
+					);
+					console.log("coords", this.locationCoords);
+
+					decodeGeopoint(this.locationCoords).then((address) => {
+						this.locationName = address;
+					});
+				},
+				(err) => {
+					alert("Failed to get current position: " + err.message);
+				}
+			);
+		},
 	},
 	created() {
 		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
@@ -269,9 +317,18 @@ export default defineComponent({
 		userId: { type: String, required: true },
 	},
 	watch: {
-		show(to, from) {
+		show(to, __from) {
 			if (to === true) {
 				this.setValues();
+			}
+		},
+		locationName(to: string, from: string) {
+			if (!to.match(this.locationFormat)) {
+				this.locationMessage = "Format: 'City, Country'";
+				this.locationError = true;
+			} else {
+				this.locationMessage = "";
+				this.locationError = false;
 			}
 		},
 	},
@@ -314,6 +371,25 @@ export default defineComponent({
 
 span {
 	display: block;
+}
+
+.location-container {
+	display: flex;
+	align-items: flex-end;
+}
+
+.message {
+	color: red;
+	font-weight: bold;
+}
+
+.location-btn {
+	background-color: rgb(0, 98, 255);
+	border-radius: 10px;
+	color: white;
+	font-weight: bold;
+	padding: 0.2rem;
+	margin: 0 0.5rem;
 }
 
 .tooltip {
