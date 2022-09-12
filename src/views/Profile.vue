@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { defineComponent, capitalize } from "vue";
-import type {
-	Instrument,
-	InstrumentWithID,
-	User,
-	UserWithID,
-} from "@/types";
+import type { Instrument, InstrumentWithID, User, UserWithID } from "@/types";
 import EditPopup from "../components/EditPopup.vue";
 import {
 	collection,
@@ -31,7 +26,7 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					<h2>{{ user.email }}</h2>
 					<h2 class="location-text">
 						<img
-							src="@/assets/icons/map-pin.svg"
+							src="@/assets/map-pin.svg"
 							alt="Map pin icon"
 							width="17"
 						/>
