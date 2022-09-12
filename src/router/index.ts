@@ -1,5 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+import Search from "../views/Search.vue";
+import Profile from "../views/Profile.vue";
+import Login from "../views/Login.vue";
+import Register from "../views/Register.vue";
+import Missing404 from "../views/404.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,28 +20,28 @@ const router = createRouter({
 			// route level code-splitting
 			// this generates a separate chunk (About.[hash].js) for this route
 			// which is lazy-loaded when the route is visited.
-			component: () => import("../views/Search.vue"),
+			component: Search,
 			// component: SoloSearch,
 		},
 		{
 			path: "/profile/:uid?",
 			name: "Profile",
-			component: () => import("../views/Profile.vue"),
+			component: Profile,
 		},
 		{
 			path: "/login",
 			name: "Login",
-			component: () => import("../views/Login.vue"),
+			component: Login,
 		},
 		{
 			path: "/register",
 			name: "Register",
-			component: () => import("../views/Register.vue"),
+			component: Register,
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "404 Not Found",
-			component: () => import("../views/404.vue"),
+			component: () => Missing404,
 		},
 	],
 });
