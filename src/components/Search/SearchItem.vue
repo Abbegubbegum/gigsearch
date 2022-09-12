@@ -19,7 +19,7 @@ import {
 				<div class="name-container">
 					<img
 						:src="
-							'/src/assets/icons/' +
+							'/' +
 							getInstrument(user.instruments[0]).iconName
 						"
 						alt="Instrument Icon"
@@ -41,7 +41,7 @@ import {
 			<div class="header-end-container">
 				<div class="location-container">
 					<img
-						src="@/assets/icons/map-pin.svg"
+						src="@/assets/map-pin.svg"
 						alt="Map pin icon"
 						width="25"
 					/>

@@ -26,7 +26,7 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					<h2>{{ user.email }}</h2>
 					<h2 class="location-text">
 						<img
-							src="@/assets/icons/map-pin.svg"
+							src="@/assets/map-pin.svg"
 							alt="Map pin icon"
 							width="17"
 						/>

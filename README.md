@@ -1,4 +1,5 @@
 # gigsearch
+## To see project either visit https://gigsearch-b3ae7.web.app or download and build this project
 
 This template should help get you started developing with Vue 3 in Vite.
 
