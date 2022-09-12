@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import type { Instrument, InstrumentWithID, UserWithID } from "@/types";
 import { capitalize, defineComponent, type PropType } from "vue";
-import StarRating from "vue-star-rating";
 import router from "@/router";
-import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
+import {
+	onSnapshot,
+	collection,
+	getFirestore,
+	CollectionReference,
+	type DocumentData,
+	getDocs,
+} from "@firebase/firestore";
 </script>
 
 <template>
@@ -24,7 +30,7 @@ import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
 				<div class="experience-container">
 					Level:
 					<StarRating
-						v-model:rating="user.experienceRating"
+						:rating="user.experienceRating"
 						:increment="0.01"
 						:read-only="true"
 						:show-rating="false"
@@ -68,6 +74,8 @@ import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
 </template>
 
 <script lang="ts">
+import StarRating from "vue-star-rating";
+
 export default defineComponent({
 	data() {
 		return {
@@ -100,20 +108,18 @@ export default defineComponent({
 		StarRating,
 	},
 	created() {
-		const unsubInstruments = onSnapshot(
-			collection(getFirestore(), "instruments"),
-			(snapshot) => {
-				let newInstruments: InstrumentWithID[] = [];
-				snapshot.forEach((doc) => {
-					newInstruments.push({
-						name: doc.data().name,
-						iconName: doc.data().iconName,
-						id: doc.id,
-					});
+		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
+			let newInstruments: InstrumentWithID[] = [];
+
+			snapshot.forEach((doc) => {
+				newInstruments.push({
+					name: doc.data().name,
+					iconName: doc.data().iconName,
+					id: doc.id,
 				});
-				this.instruments = [...newInstruments];
-			}
-		);
+			});
+			this.instruments = [...newInstruments];
+		});
 	},
 });
 </script>

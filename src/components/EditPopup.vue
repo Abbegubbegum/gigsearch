@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import type { InstrumentWithID, User } from "@/types";
+import type { Instrument, InstrumentWithID, User } from "@/types";
 import {
 	onSnapshot,
 	collection,
 	getFirestore,
 	GeoPoint,
+	getDocs,
+	doc,
+	getDoc,
 } from "@firebase/firestore";
 import { defineComponent } from "vue";
-import StarRating from "vue-star-rating";
 </script>
 
 <template>
@@ -209,26 +211,36 @@ export default defineComponent({
 				this.styles.splice(index, 1);
 			}
 		},
-		async setValues(user: User) {
-			this.name = user.name;
-			this.location = user.locationName;
-			this.about = user.about;
-			this.experienceRating = user.experienceRating;
-			this.styles = [...user.styles];
-			this.instruments = [];
+		setValues() {
+			getDoc(doc(getFirestore(), "users", this.userId)).then(
+				(snapshot) => {
+					let data = snapshot.data();
+					if (data) {
+						this.name = data.name;
+						this.location = data.locationName;
+						this.about = data.about;
+						this.experienceRating = data.experienceRating;
+						this.styles = [...data.styles];
+						this.instruments = [];
 
-			user.instruments.forEach((userInstrumentId) => {
-				let instrument = this.allInstruments.find(
-					(instrument) => instrument.id === userInstrumentId
-				);
+						data.instruments.forEach((userInstrumentId: string) => {
+							let instrument = this.allInstruments.find(
+								(instrument) =>
+									instrument.id === userInstrumentId
+							);
 
-				if (!instrument) {
-					console.log("Instrument in user does not exist in db");
-					return;
+							if (!instrument) {
+								console.log(
+									"Instrument in user does not exist in db"
+								);
+								return;
+							}
+
+							this.instruments.push(instrument);
+						});
+					}
 				}
-
-				this.instruments.push(instrument);
-			});
+			);
 		},
 
 		updateTooltipPosition(e: any) {
@@ -237,28 +249,31 @@ export default defineComponent({
 		},
 	},
 	created() {
-		const unsubInstruments = onSnapshot(
-			collection(getFirestore(), "instruments"),
-			(snapshot) => {
-				let newInstruments: InstrumentWithID[] = [];
-				snapshot.forEach((doc) => {
-					newInstruments.push({
-						name: doc.data().name,
-						iconName: doc.data().iconName,
-						id: doc.id,
-					});
+		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
+			let newInstruments: InstrumentWithID[] = [];
+
+			snapshot.forEach((doc) => {
+				newInstruments.push({
+					name: doc.data().name,
+					iconName: doc.data().iconName,
+					id: doc.id,
 				});
-				this.allInstruments = newInstruments;
-			}
-		);
+			});
+			this.allInstruments = [...newInstruments];
+		});
 
 		window.onmousemove = this.updateTooltipPosition;
 	},
 	props: {
 		show: { type: Boolean, required: true },
+		userId: { type: String, required: true },
 	},
-	components: {
-		StarRating,
+	watch: {
+		show(to, from) {
+			if (to === true) {
+				this.setValues();
+			}
+		},
 	},
 });
 </script>

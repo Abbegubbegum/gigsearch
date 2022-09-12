@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { defineComponent, capitalize } from "vue";
-import type {
-	Instrument,
-	InstrumentWithID,
-	User,
-	UserWithID,
-} from "@/types";
+import type { Instrument, InstrumentWithID, User, UserWithID } from "@/types";
 import EditPopup from "../components/EditPopup.vue";
 import {
 	collection,
@@ -17,8 +12,8 @@ import {
 	DocumentReference,
 	type DocumentData,
 	setDoc,
+	getDocs,
 } from "@firebase/firestore";
-
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 </script>
 
@@ -38,7 +33,21 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 						{{ user.locationName }}
 					</h2>
 				</div>
-				<button v-if="authedUser" type="button" @click="showPopup">
+
+				<StarRating
+					:rating="user.experienceRating"
+					:increment="0.01"
+					:read-only="true"
+					:show-rating="false"
+					:star-size="51.8"
+				/>
+
+				<button
+					v-if="authedUser"
+					type="button"
+					@click="showPopup"
+					class="push-right"
+				>
 					Edit Page
 				</button>
 			</div>
@@ -71,12 +80,14 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 			:show="editPopupShow"
 			@close="editPopupShow = false"
 			@edit="handleEdit"
-			ref="editPopup"
+			:userId="user.id"
 		/>
 	</div>
 </template>
 
 <script lang="ts">
+import StarRating from "vue-star-rating";
+
 export default defineComponent({
 	data() {
 		return {
@@ -91,11 +102,6 @@ export default defineComponent({
 		capitalize,
 		showPopup() {
 			this.editPopupShow = true;
-
-			if (this.$refs.editPopup) {
-				let ref: any = this.$refs.editPopup;
-				ref.setValues(this.user);
-			}
 		},
 		handleEdit(newUser: User) {
 			this.user.name = newUser.name;
@@ -172,7 +178,7 @@ export default defineComponent({
 			this.authedUser = true;
 		}
 
-		const unsubUser = onSnapshot(this.userRef, (snapshot) => {
+		onSnapshot(this.userRef, (snapshot) => {
 			let data = snapshot.data();
 			if (data) {
 				this.user = {
@@ -190,20 +196,18 @@ export default defineComponent({
 			}
 		});
 
-		const unsubInstruments = onSnapshot(
-			collection(getFirestore(), "instruments"),
-			(snapshot) => {
-				let newInstruments: InstrumentWithID[] = [];
-				snapshot.forEach((doc) => {
-					newInstruments.push({
-						name: doc.data().name,
-						iconName: doc.data().iconName,
-						id: doc.id,
-					});
+		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
+			let newInstruments: InstrumentWithID[] = [];
+
+			snapshot.forEach((doc) => {
+				newInstruments.push({
+					name: doc.data().name,
+					iconName: doc.data().iconName,
+					id: doc.id,
 				});
-				this.instruments = [...newInstruments];
-			}
-		);
+			});
+			this.instruments = [...newInstruments];
+		});
 
 		const unsubAuth = onAuthStateChanged(getAuth(), (authedUser) => {
 			if (authedUser?.uid === this.user.id) {
@@ -214,7 +218,7 @@ export default defineComponent({
 			this.authedUser = false;
 		});
 	},
-	components: { EditPopup },
+	components: { EditPopup, StarRating },
 });
 </script>
 
@@ -238,8 +242,8 @@ export default defineComponent({
 
 .profile-header {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	align-items: flex-start;
+	gap: 1rem;
 }
 
 button {
@@ -273,5 +277,9 @@ ul {
 .location-text {
 	margin: 0;
 	padding: 0;
+}
+
+.push-right {
+	margin-left: auto;
 }
 </style>

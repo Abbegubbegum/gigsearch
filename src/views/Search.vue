@@ -6,7 +6,12 @@ import SearchItem from "../components/Search/SearchItem.vue";
 import router from "@/router";
 import FilterSection from "../components/Filter/FilterSection.vue";
 import SortDropdown from "../components/SortDropdown.vue";
-import { onSnapshot, collection, getFirestore } from "@firebase/firestore";
+import {
+	onSnapshot,
+	collection,
+	getFirestore,
+	getDocs,
+} from "@firebase/firestore";
 </script>
 
 <template>
@@ -272,45 +277,41 @@ export default defineComponent({
 		},
 	},
 	async mounted() {
-		const unsubUser = onSnapshot(
-			collection(getFirestore(), "users"),
-			(snapshot) => {
-				let newUsers: UserWithID[] = [];
-				snapshot.forEach((userSnapshot) => {
-					let data = userSnapshot.data();
-					if (data) {
-						newUsers.push({
-							id: userSnapshot.id,
-							name: data.name,
-							email: data.email,
-							likes: data.likes,
-							experienceRating: data.experienceRating,
-							locationName: data.locationName,
-							locationCoord: data.locationCoord,
-							instruments: data.instruments,
-							styles: data.styles,
-							about: data.about,
-						});
-					}
-				});
-				this.users = [...newUsers];
-			}
-		);
-
-		const unsubInstruments = onSnapshot(
-			collection(getFirestore(), "instruments"),
-			(snapshot) => {
-				let newInstruments: InstrumentWithID[] = [];
-				snapshot.forEach((doc) => {
-					newInstruments.push({
-						name: doc.data().name,
-						iconName: doc.data().iconName,
-						id: doc.id,
+		onSnapshot(collection(getFirestore(), "users"), (snapshot) => {
+			let newUsers: UserWithID[] = [];
+			snapshot.forEach((userSnapshot) => {
+				let data = userSnapshot.data();
+				if (data) {
+					newUsers.push({
+						id: userSnapshot.id,
+						name: data.name,
+						email: data.email,
+						likes: data.likes,
+						experienceRating: data.experienceRating,
+						locationName: data.locationName,
+						locationCoord: data.locationCoord,
+						instruments: data.instruments,
+						styles: data.styles,
+						about: data.about,
 					});
+				}
+			});
+			this.users = [...newUsers];
+		});
+
+		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
+			let newInstruments: InstrumentWithID[] = [];
+
+			snapshot.forEach((doc) => {
+				newInstruments.push({
+					name: doc.data().name,
+					iconName: doc.data().iconName,
+					id: doc.id,
 				});
-				this.instruments = [...newInstruments];
-			}
-		);
+			});
+			this.instruments = [...newInstruments];
+		});
+
 		this.handleParams();
 	},
 	watch: {
@@ -398,6 +399,9 @@ main {
 	.sort-dropdown {
 		margin-left: auto;
 		margin-right: 1rem;
+	}
+	main {
+		padding: 0 3rem 3rem 3rem;
 	}
 }
 </style>
