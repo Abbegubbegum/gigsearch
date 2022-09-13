@@ -10,6 +10,7 @@ export interface User {
 	instruments: string[];
 	styles: string[];
 	about: string;
+	likedUsers: string[];
 }
 
 export interface UserWithID extends User {
@@ -27,6 +28,5 @@ export interface InstrumentWithID extends Instrument {
 
 export interface FilterOptions {
 	styles?: string[];
-	locations?: string[];
 	mainInstrumentOnly?: boolean;
 }

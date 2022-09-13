@@ -96,7 +96,6 @@ export default defineComponent({
 			this.location = this.locationValue;
 			//Empties filter options
 			this.availableFilterOptions.styles = [];
-			this.availableFilterOptions.locations = [];
 
 			await this.createFilteredDataBySearch();
 
@@ -120,7 +119,9 @@ export default defineComponent({
 			});
 
 			//Fetch the searched geopoint
-			this.searchedGeopoint = await encodeLocation(this.location);
+			this.searchedGeopoint = await encodeLocation(
+				this.location.replace(" ", "%20")
+			);
 
 			//Filter users to only contain users who has the searched instruments
 			this.searchedUsers = this.users.filter(
@@ -144,16 +145,6 @@ export default defineComponent({
 						this.availableFilterOptions.styles?.push(style);
 					}
 				});
-				if (
-					!this.availableFilterOptions.locations?.find(
-						(existingLocation) =>
-							existingLocation === user.locationName
-					)
-				) {
-					this.availableFilterOptions.locations?.push(
-						user.locationName
-					);
-				}
 			});
 		},
 
@@ -181,26 +172,6 @@ export default defineComponent({
 				}
 			}
 
-			//Remove all locations from current filter that are not in availablefilte options
-			if (this.currentFilter.locations) {
-				for (
-					let i = this.currentFilter.locations.length - 1;
-					i >= 0;
-					i--
-				) {
-					if (
-						this.availableFilterOptions.locations?.find(
-							(availiableStyle) =>
-								this.currentFilter.locations &&
-								availiableStyle ===
-									this.currentFilter.locations[i]
-						) === undefined
-					) {
-						this.currentFilter.locations.splice(i, 1);
-					}
-				}
-			}
-
 			//Filter based on main instruments only
 			if (this.currentFilter.mainInstrumentOnly) {
 				this.filteredUsers = this.filteredUsers.filter((user) =>
@@ -220,18 +191,6 @@ export default defineComponent({
 						this.currentFilter.styles?.find(
 							(filterStyle) => filterStyle === style
 						)
-					)
-				);
-			}
-
-			//Filter based on locations
-			if (
-				this.currentFilter.locations &&
-				this.currentFilter.locations.length > 0
-			) {
-				this.filteredUsers = this.filteredUsers.filter((user) =>
-					this.currentFilter.locations?.find(
-						(filterLocation) => filterLocation === user.locationName
 					)
 				);
 			}
@@ -331,6 +290,7 @@ export default defineComponent({
 						instruments: data.instruments,
 						styles: data.styles,
 						about: data.about,
+						likedUsers: data.likedUsers,
 					});
 				}
 			});

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
-import type { User} from "@/types";
-import { defineComponent } from "vue";
+import type { User } from "@/types";
+import { defineComponent, getCurrentInstance } from "vue";
 import {
 	createUserWithEmailAndPassword,
 	getAuth,
@@ -38,7 +38,7 @@ import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
 				/>
 			</label>
 			<input type="submit" value="Register" />
-			<button type="button" class="google-button" @click="googleSignIn">
+			<button type="button" class="google-btn" @click="googleSignIn">
 				Sign In With Google
 			</button>
 		</form>
@@ -52,7 +52,6 @@ export default defineComponent({
 			name: "",
 			email: "",
 			password: "",
-			users: [] as User[],
 		};
 	},
 	methods: {
@@ -72,11 +71,12 @@ export default defineComponent({
 							about: "",
 							name: this.name,
 							email: this.email,
+							likedUsers: [],
 						} as User);
 					}
 				})
 				.then(() => {
-					router.push("/");
+					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
 					console.error(err);
@@ -88,7 +88,6 @@ export default defineComponent({
 				.then((res) => {
 					const user = getAuth().currentUser;
 					if (user) {
-						updateProfile(user, { displayName: this.name });
 						return setDoc(doc(getFirestore(), "users", user.uid), {
 							likes: 0,
 							experienceRating: 0,
@@ -97,13 +96,14 @@ export default defineComponent({
 							instruments: [],
 							styles: [],
 							about: "",
-							name: this.name,
+							name: "",
 							email: this.email,
+							likedUsers: [],
 						} as User);
 					}
 				})
 				.then(() => {
-					router.push("/");
+					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
 					console.error(err);
@@ -147,5 +147,14 @@ input[type="submit"] {
 	background-color: green;
 	border: none;
 	color: white;
+}
+
+.google-btn {
+	padding: 0.3rem 1rem;
+	background-color: rgb(0, 132, 255);
+	color: white;
+	font-size: 1rem;
+	font-weight: bold;
+	align-self: center;
 }
 </style>

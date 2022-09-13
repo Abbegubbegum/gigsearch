@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { decodeGeopoint, encodeLocation } from "@/main";
 import type { Instrument, InstrumentWithID, User } from "@/types";
+import { getAuth, updateProfile } from "@firebase/auth";
 import {
 	onSnapshot,
 	collection,
@@ -172,6 +173,13 @@ export default defineComponent({
 			);
 			this.locationName = `${this.city}, ${this.country}`;
 
+			let authuser = getAuth().currentUser;
+
+			if (authuser)
+				updateProfile(authuser, {
+					displayName: this.name,
+				});
+
 			let user: User = {
 				name: this.name,
 				email: "",
@@ -182,6 +190,7 @@ export default defineComponent({
 				likes: 0,
 				experienceRating: this.experienceRating,
 				about: this.about,
+				likedUsers: [],
 			};
 
 			this.$emit("edit", user);

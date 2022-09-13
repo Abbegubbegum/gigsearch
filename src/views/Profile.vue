@@ -46,7 +46,7 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					v-if="authedUser"
 					type="button"
 					@click="showPopup"
-					class="push-right"
+					class="push-right edit-btn"
 				>
 					Edit Page
 				</button>
@@ -67,7 +67,7 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					</ul>
 				</div>
 				<div>
-					<h3>Style</h3>
+					<h3>Styles</h3>
 					<ul>
 						<li v-for="style in user.styles">
 							{{ capitalize(style) }}
@@ -75,6 +75,16 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					</ul>
 				</div>
 			</div>
+			<footer>
+				<button
+					type="button"
+					class="like-btn"
+					:class="{ liked: liked }"
+					@click="onLikeButton"
+				>
+					{{ user.likes }} Likes
+				</button>
+			</footer>
 		</div>
 		<EditPopup
 			:show="editPopupShow"
@@ -96,6 +106,7 @@ export default defineComponent({
 			editPopupShow: false,
 			instruments: [] as InstrumentWithID[],
 			userRef: {} as DocumentReference<DocumentData>,
+			liked: false,
 		};
 	},
 	methods: {
@@ -122,6 +133,7 @@ export default defineComponent({
 				instruments: this.user.instruments,
 				experienceRating: this.user.experienceRating,
 				likes: this.user.likes,
+				likedUsers: this.user.likedUsers,
 			};
 
 			setDoc(this.userRef, updateUser);
@@ -139,6 +151,53 @@ export default defineComponent({
 				({ name: "Undefined", iconName: "" } as Instrument)
 			);
 		},
+
+		async onLikeButton() {
+			let currentUser = getAuth().currentUser;
+
+			if (!currentUser || currentUser?.uid === this.user.id) return;
+
+			this.user.likes += this.liked ? -1 : 1;
+			this.liked = !this.liked;
+
+			let snapshot = await getDoc(
+				doc(getFirestore(), "users", currentUser.uid)
+			);
+
+			let data = snapshot.data();
+
+			if (!data) return;
+
+			let likedUsers: string[] = data.likedUsers;
+
+			if (likedUsers.find((i) => i == this.user.id) !== undefined) {
+				if (!this.liked) {
+					likedUsers = likedUsers.filter(
+						(userid) => userid !== this.user.id
+					);
+				}
+			} else {
+				if (this.liked) {
+					likedUsers.push(this.user.id);
+				}
+			}
+
+			setDoc(
+				doc(getFirestore(), "users", currentUser.uid),
+				{
+					likedUsers: likedUsers,
+				},
+				{ merge: true }
+			);
+
+			setDoc(
+				doc(getFirestore(), "users", this.user.id),
+				{
+					likes: this.user.likes,
+				},
+				{ merge: true }
+			);
+		},
 	},
 	async created() {
 		this.userRef = doc(
@@ -147,21 +206,21 @@ export default defineComponent({
 			this.$route.params.uid.toString()
 		);
 
-		let snapshot = await getDoc(this.userRef).catch((err) => {
+		let userSnapshot = await getDoc(this.userRef).catch((err) => {
 			console.error(err);
 			router.push("/");
 			return;
 		});
 
-		if (!snapshot || !snapshot.exists()) {
+		if (!userSnapshot || !userSnapshot.exists()) {
 			router.push("/404");
 			return;
 		}
 
-		let data = snapshot.data();
+		let data = userSnapshot.data();
 		if (data) {
 			this.user = {
-				id: snapshot.id,
+				id: userSnapshot.id,
 				name: data.name,
 				email: data.email,
 				likes: data.likes,
@@ -171,11 +230,32 @@ export default defineComponent({
 				instruments: data.instruments,
 				styles: data.styles,
 				about: data.about,
+				likedUsers: data.likedUsers,
 			};
 		}
 
-		if (getAuth().currentUser?.uid === snapshot.id) {
+		let currentUser = getAuth().currentUser;
+
+		if (currentUser?.uid === userSnapshot.id) {
 			this.authedUser = true;
+		}
+
+		if (currentUser) {
+			let currentUserSnapshot = await getDoc(
+				doc(getFirestore(), "users", currentUser.uid)
+			);
+
+			let data = currentUserSnapshot.data();
+
+			if (data) {
+				let likedUsers: string[] = data.likedUsers;
+
+				if (likedUsers.find((i) => i == this.user.id) !== undefined) {
+					this.liked = true;
+				} else {
+					this.liked = false;
+				}
+			}
 		}
 
 		onSnapshot(this.userRef, (snapshot) => {
@@ -192,6 +272,7 @@ export default defineComponent({
 					instruments: data.instruments,
 					styles: data.styles,
 					about: data.about,
+					likedUsers: [],
 				};
 			}
 		});
@@ -232,6 +313,8 @@ export default defineComponent({
 }
 
 .content-container {
+	display: grid;
+	grid-template-rows: auto auto auto 1fr;
 	height: 95%;
 	width: clamp(13rem, 70%, 56rem);
 	border: 1px solid grey;
@@ -246,7 +329,7 @@ export default defineComponent({
 	gap: 1rem;
 }
 
-button {
+.edit-btn {
 	padding: 1rem;
 }
 
@@ -281,5 +364,15 @@ ul {
 
 .push-right {
 	margin-left: auto;
+}
+
+.like-btn {
+	padding: 0.5rem;
+	font-size: 1rem;
+}
+
+.liked {
+	background-color: rgb(0, 132, 255);
+	color: white;
 }
 </style>

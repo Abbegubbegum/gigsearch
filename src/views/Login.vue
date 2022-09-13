@@ -2,7 +2,12 @@
 import { defineComponent } from "vue";
 import router from "@/router";
 import type { User } from "@/types";
-import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+import {
+	getAuth,
+	GoogleAuthProvider,
+	signInWithEmailAndPassword,
+	signInWithPopup,
+} from "@firebase/auth";
 </script>
 
 <template>
@@ -33,6 +38,9 @@ import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 				</label>
 
 				<input type="submit" value="Login" class="submit-btn" />
+				<button type="button" class="google-btn" @click="googleSignIn">
+					Sign in with Google
+				</button>
 			</form>
 		</div>
 		<button
@@ -60,7 +68,45 @@ export default defineComponent({
 	methods: {
 		loginUser() {
 			signInWithEmailAndPassword(getAuth(), this.email, this.password)
-				.then((data) => {
+				.then((__data) => {
+					console.log("Logged in successfully");
+					router.push("/");
+				})
+				.catch((err) => {
+					switch (err.code) {
+						case "auth/invalid-email":
+							this.wrongEmail = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+							}, this.wrongAnimationTime);
+							break;
+						case "auth/user-not-found":
+							this.wrongEmail = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+							}, this.wrongAnimationTime);
+							break;
+						case "auth/wrong-password":
+							this.wrongPassword = true;
+							setTimeout(() => {
+								this.wrongPassword = false;
+							}, this.wrongAnimationTime);
+							break;
+						default:
+							this.wrongEmail = true;
+							this.wrongPassword = true;
+							setTimeout(() => {
+								this.wrongEmail = false;
+								this.wrongPassword = false;
+							}, this.wrongAnimationTime);
+							break;
+					}
+				});
+		},
+
+		googleSignIn() {
+			signInWithPopup(getAuth(), new GoogleAuthProvider())
+				.then((__data) => {
 					console.log("Logged in successfully");
 					router.push("/");
 				})
@@ -133,16 +179,36 @@ h1 {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	align-items: center;
+	align-items: flex-start;
 }
 
-input {
-	margin: 1rem 0rem;
+label {
+	width: 100%;
+}
+input[type="password"],
+input[type="email"] {
+	margin: 0rem 0rem 1rem 0rem;
+	width: 100%;
 }
 
 .submit-btn {
 	padding: 0.3rem 1rem;
 	font-size: 1rem;
+	background-color: rgb(1, 151, 1);
+	color: white;
+	align-self: center;
+	font-size: 1rem;
+	font-weight: bold;
+	width: 100%;
+}
+
+.google-btn {
+	padding: 0.3rem 1rem;
+	background-color: rgb(0, 132, 255);
+	color: white;
+	font-size: 1rem;
+	font-weight: bold;
+	align-self: center;
 }
 
 .register-btn {

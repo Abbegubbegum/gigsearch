@@ -21,12 +21,6 @@ import type { FilterOptions } from "@/types";
 			object-key="styles"
 			@filter-changed="handleFilterChange"
 		/>
-		<SelectionFilterGroup
-			filter-label="Locations"
-			:filter-options="filterOptions.locations"
-			object-key="locations"
-			@filter-changed="handleFilterChange"
-		/>
 	</div>
 </template>
 
@@ -55,9 +49,6 @@ export default defineComponent({
 			if (filter.mainInstrumentOnly !== undefined) {
 				this.currentFilter.mainInstrumentOnly =
 					filter.mainInstrumentOnly;
-			}
-			if (filter.locations) {
-				this.currentFilter.locations = filter.locations;
 			}
 
 			this.$emit("filterChanged", this.currentFilter);

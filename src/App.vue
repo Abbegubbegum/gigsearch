@@ -46,6 +46,8 @@ export default defineComponent({
 			lastScrollYUpdate: 0,
 			authed: false,
 			dropdownHover: false,
+			profileButtonLink: "/login",
+			profileButtonLabel: "Login",
 		};
 	},
 	methods: {
@@ -64,14 +66,6 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		profileButtonLink() {
-			return this.authed
-				? "/profile/" + getAuth().currentUser?.uid
-				: "/login";
-		},
-		profileButtonLabel() {
-			return this.authed ? getAuth().currentUser?.displayName : "Login";
-		},
 		showDropdown() {
 			return this.dropdownHover && this.authed;
 		},
@@ -81,8 +75,18 @@ export default defineComponent({
 		onAuthStateChanged(getAuth(), (user) => {
 			if (user) {
 				this.authed = true;
+				this.profileButtonLink = "/profile/" + user.uid;
+				if (user.displayName) {
+					this.profileButtonLabel = user.displayName;
+				} else if (user.email) {
+					this.profileButtonLabel = user.email;
+				} else {
+					this.profileButtonLabel = "UNDEFINED";
+				}
 			} else {
 				this.authed = false;
+				this.profileButtonLink = "/login";
+				this.profileButtonLabel = "Login";
 			}
 		});
 	},
