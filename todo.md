@@ -1,10 +1,12 @@
 [] Profile page
 - [] A Like button
 - [] A button to email them
-- [] Better way to set your location
+- [x] Better way to set your location
 [] Search page
 - [] Better search for locations, and sort by closest
-[] "Build a Band" page
 [] Login page
 - [] Google sign-in
-[] Firebase hosting
+[x] Firebase hosting
+[] New CSS with Tailwind/Vuetify
+[] Messaging service
+[] "Build a Band" page

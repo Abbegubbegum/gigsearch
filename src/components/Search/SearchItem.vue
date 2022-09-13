@@ -18,10 +18,7 @@ import {
 			<div class="title-container">
 				<div class="name-container">
 					<img
-						:src="
-							'/' +
-							getInstrument(user.instruments[0]).iconName
-						"
+						:src="'/' + getInstrument(user.instruments[0]).iconName"
 						alt="Instrument Icon"
 						height="30"
 					/>
@@ -30,7 +27,7 @@ import {
 				<div class="experience-container">
 					Level:
 					<StarRating
-						:rating="user.experienceRating"
+						:rating="parseInt(user.experienceRating.toString())"
 						:increment="0.01"
 						:read-only="true"
 						:show-rating="false"

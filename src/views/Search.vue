@@ -11,7 +11,9 @@ import {
 	collection,
 	getFirestore,
 	getDocs,
+	GeoPoint,
 } from "@firebase/firestore";
+import { encodeLocation, getDistance } from "@/main";
 </script>
 
 <template>
@@ -22,8 +24,10 @@ import {
 		>
 			<SearchBar
 				@on-submit="setSearch"
-				:value="searchBarValue"
-				@on-input="(val: string) => {searchBarValue = val;}"
+				:searchvalue="searchBarValue"
+				:locationvalue="locationValue"
+				@on-search-input="(val: string) => {searchBarValue = val;}"
+				@on-location-input="(val: string) => {locationValue = val;}"
 				class="searchbar"
 				:class="{ initialSearch: initialSearch }"
 			/>
@@ -53,8 +57,14 @@ export default defineComponent({
 			initialSearch: true,
 			//The current search
 			search: "",
+			// The current location search
+			location: "",
 			//The value of the search bar
 			searchBarValue: "",
+			// The value of the location search bar
+			locationValue: "",
+			// The coords of the location search
+			searchedGeopoint: {} as GeoPoint,
 			//Users matching the search
 			searchedUsers: [] as UserWithID[],
 			//Users matching both the search and the filter
@@ -70,7 +80,6 @@ export default defineComponent({
 			currentFilter: {
 				styles: [],
 				mainInstrumentOnly: false,
-				locations: [],
 			} as FilterOptions,
 			currentSort: "",
 			users: [] as UserWithID[],
@@ -79,20 +88,22 @@ export default defineComponent({
 	},
 	methods: {
 		setSearch() {
-			router.push(/search/ + this.searchBarValue);
+			router.push(`/search/${this.searchBarValue}/${this.locationValue}`);
 		},
-		handleSearch() {
+		async handleSearch() {
 			this.initialSearch = false;
 			this.search = this.searchBarValue;
+			this.location = this.locationValue;
 			//Empties filter options
 			this.availableFilterOptions.styles = [];
 			this.availableFilterOptions.locations = [];
 
-			this.createFilteredDataBySearch();
+			await this.createFilteredDataBySearch();
 
 			this.applyFilter();
 
 			this.sortUsers();
+
 			// console.log(this.availableFilterOptions);
 			// console.log(this.search);
 			// console.log(this.searchedInstruments);
@@ -100,13 +111,16 @@ export default defineComponent({
 		},
 
 		//Populates all relevant data from initial search
-		createFilteredDataBySearch() {
+		async createFilteredDataBySearch() {
 			//Create searched instruments list
 			this.searchedInstruments = this.instruments.filter((instrument) => {
 				return instrument.name
 					.toLowerCase()
 					.includes(this.search.toLowerCase());
 			});
+
+			//Fetch the searched geopoint
+			this.searchedGeopoint = await encodeLocation(this.location);
 
 			//Filter users to only contain users who has the searched instruments
 			this.searchedUsers = this.users.filter(
@@ -145,6 +159,10 @@ export default defineComponent({
 
 		//Apply current filter
 		applyFilter() {
+			//Copy the searched users
+			this.filteredUsers = [...this.searchedUsers];
+
+			// Remove all styles from current filter that are not in availablefilter options
 			if (this.currentFilter.styles) {
 				for (
 					let i = this.currentFilter.styles.length - 1;
@@ -163,6 +181,7 @@ export default defineComponent({
 				}
 			}
 
+			//Remove all locations from current filter that are not in availablefilte options
 			if (this.currentFilter.locations) {
 				for (
 					let i = this.currentFilter.locations.length - 1;
@@ -182,9 +201,7 @@ export default defineComponent({
 				}
 			}
 
-			//Copy the searched users
-			this.filteredUsers = [...this.searchedUsers];
-
+			//Filter based on main instruments only
 			if (this.currentFilter.mainInstrumentOnly) {
 				this.filteredUsers = this.filteredUsers.filter((user) =>
 					this.searchedInstruments.find(
@@ -207,6 +224,7 @@ export default defineComponent({
 				);
 			}
 
+			//Filter based on locations
 			if (
 				this.currentFilter.locations &&
 				this.currentFilter.locations.length > 0
@@ -220,7 +238,7 @@ export default defineComponent({
 		},
 
 		sortUsers() {
-			//Sort by relevant main instruments first
+			//Sort by relevant main instruments
 			this.filteredUsers.sort((a, b): number => {
 				let aMainMatch = this.searchedInstruments.find(
 					(instrument) => instrument.id === a.instruments[0]
@@ -251,27 +269,47 @@ export default defineComponent({
 					return b.experienceRating - a.experienceRating;
 				});
 			}
+
+			//Sort by closest to search location
+			this.filteredUsers.sort((a, b): number => {
+				return (
+					getDistance(a.locationCoord, this.searchedGeopoint) -
+					getDistance(b.locationCoord, this.searchedGeopoint)
+				);
+			});
 		},
 
 		//Handle the params
 		handleParams() {
-			if (this.$route.params.search === undefined) return;
-			if (this.$route.params.search.length > 0) {
+			if (
+				this.$route.params.search === undefined ||
+				this.$route.params.location === undefined
+			)
+				return;
+			if (
+				this.$route.params.search.length > 0 &&
+				this.$route.params.location
+			) {
 				this.searchBarValue = this.$route.params.search.toString();
+				this.locationValue = this.$route.params.location.toString();
 				this.handleSearch();
 			} else {
 				this.searchBarValue = "";
+				this.locationValue = "";
 				this.initialSearch = true;
 			}
 		},
 
 		handleChangedFilter(newFilter: FilterOptions) {
+			console.log("changed filter");
 			this.currentFilter = newFilter;
 			this.applyFilter();
 			this.sortUsers();
 		},
 
 		handleChangedSort(newSort: string) {
+			console.log("changed sort");
+
 			this.currentSort = newSort;
 			this.sortUsers();
 		},

@@ -67,15 +67,12 @@ export async function decodeGeopoint(coord: GeoPoint): Promise<string> {
 	return "Invalid Location";
 }
 
-export async function encodeLocation(
-	postalTown: string,
-	country: string
-): Promise<GeoPoint> {
+export async function encodeLocation(searchString: string): Promise<GeoPoint> {
 	const api_key = await getMapsApiKey();
 
 	let res = await axios.get(mapsAPIURL, {
 		params: {
-			address: `${postalTown} ${country}`,
+			address: searchString,
 			key: api_key,
 		},
 	});
@@ -86,6 +83,26 @@ export async function encodeLocation(
 		return new GeoPoint(result.lat, result.lng);
 	}
 	return new GeoPoint(0, 0);
+}
+
+export function getDistance(posA: GeoPoint, posB: GeoPoint): number {
+	const latA = (posA.latitude * Math.PI) / 180;
+	const lngA = (posA.longitude * Math.PI) / 180;
+	const latB = (posB.latitude * Math.PI) / 180;
+	const lngB = (posB.longitude * Math.PI) / 180;
+
+	const dlng = lngB - lngA;
+	const dlat = latB - latA;
+
+	const a =
+		Math.pow(Math.sin(dlat / 2), 2) +
+		Math.cos(latA) * Math.cos(latB) * Math.pow(Math.sin(dlng / 2), 2);
+
+	const c = 2 * Math.asin(Math.sqrt(a));
+
+	let r = 6371;
+
+	return c * r;
 }
 
 async function getMapsApiKey(): Promise<string> {

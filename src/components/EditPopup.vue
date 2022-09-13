@@ -25,15 +25,22 @@ import { defineComponent } from "vue";
 						</label>
 						<div class="location-container">
 							<label>
-								<span>Location</span>
+								<span>City</span>
 								<input
 									type="text"
-									v-model="locationName"
-									placeholder="Stockholm, Sweden"
+									v-model="city"
+									placeholder="Stockholm"
+									required
 								/>
-								<p class="message" v-if="locationError">
-									{{ locationMessage }}
-								</p>
+							</label>
+							<label>
+								<span>Country</span>
+								<input
+									type="text"
+									v-model="country"
+									placeholder="Sweden"
+									required
+								/>
 							</label>
 							<button class="location-btn" @click="getLocation">
 								Get My Location
@@ -140,9 +147,8 @@ export default defineComponent({
 			name: "",
 			locationName: "",
 			locationCoords: {} as GeoPoint,
-			locationMessage: "",
-			locationError: false,
-			locationFormat: /(\w+), (\w+)/,
+			city: "",
+			country: "",
 			experienceRating: 0,
 			instrumentInput: "",
 			instruments: [] as InstrumentWithID[],
@@ -161,14 +167,10 @@ export default defineComponent({
 				(instrument) => instrument.id
 			);
 
-			let match = this.locationName.match(this.locationFormat);
-
-			if (!match?.length) {
-				alert("Invalid location format, unable to submit");
-				return;
-			}
-
-			this.locationCoords = await encodeLocation(match[0], match[1]);
+			this.locationCoords = await encodeLocation(
+				`${this.city}%20${this.country}`
+			);
+			this.locationName = `${this.city}, ${this.country}`;
 
 			let user: User = {
 				name: this.name,
@@ -243,7 +245,9 @@ export default defineComponent({
 					let data = snapshot.data();
 					if (data) {
 						this.name = data.name;
-						this.locationName = data.locationName;
+						let words = data.locationName.split(", ");
+						this.city = words[0];
+						this.country = words[1];
 						this.about = data.about;
 						this.experienceRating = data.experienceRating;
 						this.styles = [...data.styles];
@@ -284,10 +288,11 @@ export default defineComponent({
 						pos.coords.latitude,
 						pos.coords.longitude
 					);
-					console.log("coords", this.locationCoords);
 
 					decodeGeopoint(this.locationCoords).then((address) => {
-						this.locationName = address;
+						let words = address.split(", ");
+						this.city = words[0];
+						this.country = words[1];
 					});
 				},
 				(err) => {
@@ -320,15 +325,6 @@ export default defineComponent({
 		show(to, __from) {
 			if (to === true) {
 				this.setValues();
-			}
-		},
-		locationName(to: string, from: string) {
-			if (!to.match(this.locationFormat)) {
-				this.locationMessage = "Format: 'City, Country'";
-				this.locationError = true;
-			} else {
-				this.locationMessage = "";
-				this.locationError = false;
 			}
 		},
 	},

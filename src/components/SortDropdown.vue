@@ -71,9 +71,6 @@ export default defineComponent({
 			return filtered;
 		},
 	},
-	mounted() {
-		this.selectOption(this.options[this.defaultOptionIndex]);
-	},
 });
 </script>
 

@@ -4,14 +4,24 @@ import { defineComponent } from "vue";
 
 <template>
 	<form @submit.prevent="submit">
-		<input
-			type="search"
-			class="search-bar"
-			:placeholder="placeholder"
-			v-model="content"
-			@input="handleInput"
-			autofocus
-		/>
+		<div>
+			<input
+				type="search"
+				class="search-bar"
+				placeholder="What instrument would you like?"
+				v-model="searchContent"
+				@input="handleSearchInput"
+				autofocus
+			/>
+			<input
+				type="search"
+				class="search-bar"
+				placeholder="Where?"
+				v-model="locationContent"
+				@input="handleLocationInput"
+			/>
+		</div>
+
 		<input type="submit" value="🔍" class="submit-btn" />
 	</form>
 </template>
@@ -20,38 +30,44 @@ import { defineComponent } from "vue";
 export default defineComponent({
 	data() {
 		return {
-			content: this.value || "",
+			searchContent: this.searchvalue || "",
+			locationContent: this.locationvalue || "",
 		};
 	},
 	methods: {
 		submit() {
-			if (this.content !== "") {
+			if (this.searchContent !== "" && this.locationContent !== "") {
 				this.$emit("onSubmit");
 			}
 		},
-		handleInput() {
-			this.$emit("onInput", this.content);
+		handleSearchInput() {
+			this.$emit("onSearchInput", this.searchContent);
+		},
+		handleLocationInput() {
+			this.$emit("onLocationInput", this.locationContent);
 		},
 	},
 	props: {
-		placeholder: {
+		searchvalue: {
 			type: String,
-			default: "What instrument would you like?",
 		},
-		value: {
+		locationvalue: {
 			type: String,
 		},
 	},
 	watch: {
-		value: function (to, from) {
-			this.content = to;
+		searchvalue: function (to, from) {
+			this.searchContent = to;
+		},
+		locationvalue: function (to, from) {
+			this.locationContent = to;
 		},
 	},
 });
 </script>
 
 <style scoped>
-div {
+form {
 	display: flex;
 	align-items: center;
 }
@@ -64,6 +80,7 @@ div {
 }
 
 .search-bar {
+	display: block;
 	height: 3rem;
 	width: 30rem;
 	box-shadow: 5px 5px 5px grey;
@@ -71,13 +88,13 @@ div {
 }
 
 .submit-btn {
-	border: none;
-	height: 2.5rem;
+	background-color: lightgray;
+	height: 6rem;
 	width: 2.7rem;
-	margin-left: -3rem;
+	margin: 0.5rem;
 }
 
 .submit-btn:hover {
-	background-color: lightgray;
+	background-color: lightslategray;
 }
 </style>

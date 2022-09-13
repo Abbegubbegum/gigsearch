@@ -15,7 +15,7 @@ const router = createRouter({
 			component: HomeView,
 		},
 		{
-			path: "/search/:search?",
+			path: "/search/:search?/:location?",
 			name: "Search",
 			// route level code-splitting
 			// this generates a separate chunk (About.[hash].js) for this route
