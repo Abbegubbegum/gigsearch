@@ -1,6 +1,5 @@
 [] Profile page
 - [x] A Like button
-- [] A button to email them
 - [x] Better way to set your location
 [] Search page
 - [x] Better search for locations, and sort by closest

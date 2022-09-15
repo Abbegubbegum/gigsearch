@@ -23,24 +23,15 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 			<div class="profile-header">
 				<div class="name-title">
 					<h1>{{ capitalize(user.name) }}</h1>
-					<h2>{{ user.email }}</h2>
-					<h2 class="location-text">
-						<img
-							src="@/assets/map-pin.svg"
-							alt="Map pin icon"
-							width="17"
-						/>
-						{{ user.locationName }}
-					</h2>
 				</div>
-
-				<StarRating
-					:rating="user.experienceRating"
-					:increment="0.01"
-					:read-only="true"
-					:show-rating="false"
-					:star-size="51.8"
-				/>
+				<h2 class="location-text">
+					<img
+						src="@/assets/map-pin.svg"
+						alt="Map pin icon"
+						width="20"
+					/>
+					{{ user.locationName }}
+				</h2>
 
 				<button
 					v-if="authedUser"
@@ -50,6 +41,21 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 				>
 					Edit Page
 				</button>
+			</div>
+			<div>
+				<a :href="'mailto:' + user.email">{{ user.email }}</a>
+			</div>
+			<div class="star-rating">
+				Experience Rating
+				<span class="rating-container">
+					<StarRating
+						:rating="user.experienceRating"
+						:increment="0.01"
+						:read-only="true"
+						:show-rating="false"
+						:star-size="30"
+					/>
+				</span>
 			</div>
 			<div class="item-container">
 				<div>
@@ -79,10 +85,10 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 				<button
 					type="button"
 					class="like-btn"
-					:class="{ liked: liked }"
+					:class="{ liked: liked, disabled: authedUser }"
 					@click="onLikeButton"
 				>
-					{{ user.likes }} Likes
+					{{ user.likes }} 👍
 				</button>
 			</footer>
 		</div>
@@ -155,7 +161,7 @@ export default defineComponent({
 		async onLikeButton() {
 			let currentUser = getAuth().currentUser;
 
-			if (!currentUser || currentUser?.uid === this.user.id) return;
+			if (!currentUser || this.authedUser) return;
 
 			this.user.likes += this.liked ? -1 : 1;
 			this.liked = !this.liked;
@@ -314,10 +320,9 @@ export default defineComponent({
 
 .content-container {
 	display: grid;
-	grid-template-rows: auto auto auto 1fr;
+	grid-template-rows: auto auto auto auto auto 1fr;
 	height: 95%;
 	width: clamp(13rem, 70%, 56rem);
-	border: 1px solid grey;
 	background-color: whitesmoke;
 	border-radius: 3rem;
 	padding: 2rem;
@@ -325,8 +330,10 @@ export default defineComponent({
 
 .profile-header {
 	display: flex;
-	align-items: flex-start;
+	height: auto;
+	align-items: flex-end;
 	gap: 1rem;
+	margin-bottom: 0.5rem;
 }
 
 .edit-btn {
@@ -334,13 +341,24 @@ export default defineComponent({
 }
 
 h1 {
+	line-height: 2.5rem;
 	font-size: 2.5rem;
 	font-weight: bold;
 }
 
+a {
+	font-size: 1.3rem;
+	text-decoration: none;
+	color: blue;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 h2 {
 	color: grey;
-	font-size: 1.3rem;
+	font-size: 1.6rem;
 }
 
 h3 {
@@ -350,6 +368,15 @@ h3 {
 ul {
 	padding-left: 1rem;
 }
+.location-text {
+	margin: 0;
+	padding: 0;
+	line-height: initial;
+}
+
+.push-right {
+	margin-left: auto;
+}
 
 .item-container {
 	display: flex;
@@ -357,18 +384,37 @@ ul {
 	gap: 2rem;
 }
 
-.location-text {
-	margin: 0;
-	padding: 0;
+.edit-btn {
+	background-color: rgb(0, 140, 255);
+	color: white;
+	padding: 0.5rem;
+	font-size: 1rem;
+	font-weight: bold;
 }
 
-.push-right {
-	margin-left: auto;
+.edit-btn:hover {
+	background-color: rgb(0, 118, 214);
+}
+
+.star-rating {
+	margin: 1rem 0;
+	color: gray;
+	font-size: 1.3rem;
 }
 
 .like-btn {
 	padding: 0.5rem;
 	font-size: 1rem;
+	background-color: lightgray;
+}
+
+.like-btn:hover {
+	background-color: gray;
+}
+
+.disabled:hover {
+	cursor: not-allowed;
+	background-color: lightgray;
 }
 
 .liked {

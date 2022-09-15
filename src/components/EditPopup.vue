@@ -123,13 +123,11 @@ import { defineComponent } from "vue";
 						<div class="button-container">
 							<input
 								type="submit"
-								value="Submit"
+								value="Save"
 								@click="handleFullSubmit"
+								class="submit-btn"
 							/>
-							<button
-								class="modal-default-button"
-								@click="$emit('close')"
-							>
+							<button class="close-btn" @click="$emit('close')">
 								Close
 							</button>
 						</div>
@@ -435,18 +433,51 @@ span {
 	transform: scale(1.1);
 }
 
+ul {
+	width: fit-content;
+	list-style: none;
+	padding: 0;
+}
+
+.rmv-btn {
+	background-color: rgb(238, 75, 43);
+	color: white;
+	font-weight: bold;
+	border: none;
+}
+
+rmv-btn:hover,
 li:hover {
 	cursor: pointer;
 	text-decoration: line-through;
+}
+
+.add-btn {
+	margin-left: 1rem;
+	background-color: white;
+	font-size: 1rem;
+	border-radius: 5px;
 }
 
 .button-container {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin: 1rem 0 0 0;
 }
 
-.add-btn {
-	margin-left: 1rem;
+.submit-btn {
+	padding: 0.5rem;
+	font-size: 1rem;
+	background-color: rgb(0, 110, 255);
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
+}
+
+.close-btn {
+	padding: 0.5rem;
+	font-size: 1rem;
+	font-weight: bold;
 }
 </style>
