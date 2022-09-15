@@ -1,34 +1,18 @@
-<script setup lang="ts">
-import { defineComponent } from "vue";
-</script>
-
 <template>
-	<v-container>
-		<h1>FIND ALL YOUR GIG MUSICIAN NEEDS</h1>
-	</v-container>
+  <hello-world />
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
+
+// Components
+import HelloWorld from '../components/HelloWorld.vue';
+
 export default defineComponent({
-	name: "HomeView",
+  name: 'HomeView',
+
+  components: {
+    HelloWorld,
+  },
 });
 </script>
-
-<style scoped>
-div {
-	height: 100%;
-	background-image: url(../assets/musician-stockphoto.jpeg);
-	background-size: cover;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-h1 {
-	font-weight: 900;
-	font-size: 3rem;
-	color: black;
-	padding: 1rem;
-	background-color: aquamarine;
-}
-</style>

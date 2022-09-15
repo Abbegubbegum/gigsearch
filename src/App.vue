@@ -1,13 +1,9 @@
 <template>
-	<v-app class="fill-height">
-		<v-app-bar app> <button class="pa-6">Click Me!</button> </v-app-bar>
+	<v-app>
+		<v-app-bar app><v-btn>Button</v-btn></v-app-bar>
 		<v-main>
-			<v-container fluid>
-				<router-view />
-			</v-container>
+			<router-view />
 		</v-main>
-
-		<v-footer app> Footer </v-footer>
 	</v-app>
 </template>
 

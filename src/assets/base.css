@@ -59,10 +59,6 @@
 	font-weight: normal;
 }
 
-#app {
-	min-height: 100vh;
-}
-
 @media only screen and (max-width: 630px) {
 	html {
 		font-size: calc(0.3rem + 1vw);
