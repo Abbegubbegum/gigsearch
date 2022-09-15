@@ -1,13 +1,21 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { defineComponent } from "vue";
+</script>
 
 <template>
-	<main>
+	<v-container>
 		<h1>FIND ALL YOUR GIG MUSICIAN NEEDS</h1>
-	</main>
+	</v-container>
 </template>
 
+<script lang="ts">
+export default defineComponent({
+	name: "HomeView",
+});
+</script>
+
 <style scoped>
-main {
+div {
 	height: 100%;
 	background-image: url(../assets/musician-stockphoto.jpeg);
 	background-size: cover;

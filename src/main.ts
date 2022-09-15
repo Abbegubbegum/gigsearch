@@ -11,6 +11,9 @@ import { getDoc } from "@firebase/firestore";
 // Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+import vuetify from "./plugins/vuetify";
+import { loadFonts } from "./plugins/webfontloader";
+
 const mapsAPIURL = "https://maps.googleapis.com/maps/api/geocode/json?";
 
 const firebaseConfig = {
@@ -26,9 +29,12 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 // const analytics = getAnalytics(firebaseapp);
 
+loadFonts();
+
 const app = createApp(App);
 
 app.use(router);
+app.use(vuetify);
 
 app.mount("#app");
 
