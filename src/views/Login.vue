@@ -11,7 +11,33 @@ import {
 </script>
 
 <template>
-	<div class="content-container">
+	<div class="fill-height d-flex flex-column justify-center align-center">
+		<v-card width="300">
+			<v-toolbar>
+				<v-toolbar-title>LOGIN</v-toolbar-title>
+			</v-toolbar>
+			<v-card-text>
+				<v-form>
+					<v-text-field
+						label="Email"
+						type="text"
+						v-model="email"
+					></v-text-field>
+					<v-text-field
+						label="Password"
+						type="password"
+						v-model="password"
+					>
+					</v-text-field>
+				</v-form>
+			</v-card-text>
+			<v-card-actions>
+				<v-spacer> </v-spacer>
+				<v-btn>Sign in with google</v-btn>
+				<v-btn color="green">Login</v-btn>
+			</v-card-actions>
+		</v-card>
+
 		<div class="login-box">
 			<div class="login-header">
 				<h1>LOGIN</h1>
