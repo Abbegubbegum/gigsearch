@@ -10,33 +10,32 @@ import {
 	updateProfile,
 } from "firebase/auth";
 import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
+import TextField from "../components/TextField.vue";
 </script>
 
 <template>
 	<div class="content-container">
 		<form class="register-form" @submit.prevent="registerUser">
-			<label>
-				<span>Name:</span>
-				<input v-model="name" type="text" class="text-input" required />
-			</label>
-			<label>
-				<span>Email:</span>
-				<input
-					v-model="email"
-					type="email"
-					class="text-input"
-					required
-				/>
-			</label>
-			<label>
-				<span>Password:</span>
-				<input
-					v-model="password"
-					type="password"
-					class="text-input"
-					required
-				/>
-			</label>
+			<TextField
+				label="name"
+				type="text"
+				:value="name"
+				@input="(e) => (name = e.target.value)"
+			/>
+
+			<TextField
+				label="email"
+				type="email"
+				:value="email"
+				@input="(e) => (email = e.target.value)"
+			/>
+
+			<TextField
+				label="password"
+				type="password"
+				:value="password"
+				@input="(e) => (password = e.target.value)"
+			/>
 			<input type="submit" value="Register" />
 			<button type="button" class="google-btn" @click="googleSignIn">
 				Sign In With Google
@@ -127,6 +126,8 @@ export default defineComponent({
 	gap: 1rem;
 	border: 1px solid gray;
 	padding: 1rem;
+	box-shadow: 1px 1px 2px gray;
+	width: clamp(20rem, 40%, 40rem);
 }
 
 label {
@@ -136,13 +137,9 @@ label {
 	gap: 0.5rem;
 }
 
-.text-input {
-	padding: 0.5rem;
-}
-
 input[type="submit"] {
 	padding: 0.3rem;
-	font-size: 1rem;
+	font-size: 1.5rem;
 	font-weight: bold;
 	background-color: green;
 	border: none;
@@ -151,6 +148,7 @@ input[type="submit"] {
 
 .google-btn {
 	padding: 0.3rem 1rem;
+	margin: 0 10rem;
 	background-color: rgb(0, 132, 255);
 	color: white;
 	font-size: 1rem;

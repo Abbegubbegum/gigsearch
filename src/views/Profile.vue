@@ -39,6 +39,7 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 					@click="showPopup"
 					class="push-right edit-btn"
 				>
+					<img src="@/assets/edit-icon.svg" />
 					Edit Page
 				</button>
 			</div>
@@ -338,6 +339,9 @@ export default defineComponent({
 
 .edit-btn {
 	padding: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
 }
 
 h1 {

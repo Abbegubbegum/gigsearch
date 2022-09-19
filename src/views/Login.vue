@@ -8,6 +8,7 @@ import {
 	signInWithEmailAndPassword,
 	signInWithPopup,
 } from "@firebase/auth";
+import TextField from "../components/TextField.vue";
 </script>
 
 <template>
@@ -17,25 +18,19 @@ import {
 				<h1>LOGIN</h1>
 			</div>
 			<form class="login-form" @submit.prevent="loginUser">
-				<label>
-					Email:
-					<input
-						type="email"
-						v-model="email"
-						:class="{ wronganimation: wrongEmail }"
-						required
-					/>
-				</label>
+				<TextField
+					label="email"
+					type="email"
+					:value="email"
+					@input="(e) => (email = e.target.value)"
+				/>
 
-				<label>
-					Password:
-					<input
-						type="password"
-						v-model="password"
-						:class="{ wronganimation: wrongPassword }"
-						required
-					/>
-				</label>
+				<TextField
+					label="password"
+					type="password"
+					:value="password"
+					@input="(e) => (password = e.target.value)"
+				/>
 
 				<input type="submit" value="Login" class="submit-btn" />
 				<button type="button" class="google-btn" @click="googleSignIn">
@@ -165,6 +160,7 @@ export default defineComponent({
 	padding: 1rem;
 	border: 1px solid gray;
 	box-shadow: 1px 1px 2px gray;
+	width: clamp(20rem, 40%, 40rem);
 }
 
 .login-header {
@@ -182,22 +178,13 @@ h1 {
 	align-items: flex-start;
 }
 
-label {
-	width: 100%;
-}
-input[type="password"],
-input[type="email"] {
-	margin: 0rem 0rem 1rem 0rem;
-	width: 100%;
-}
-
 .submit-btn {
 	padding: 0.3rem 1rem;
-	font-size: 1rem;
+	margin: 1rem;
 	background-color: rgb(1, 151, 1);
 	color: white;
 	align-self: center;
-	font-size: 1rem;
+	font-size: 1.4rem;
 	font-weight: bold;
 	width: 100%;
 }
@@ -215,6 +202,10 @@ input[type="email"] {
 	margin: 1rem;
 	padding: 0.3rem 1rem;
 	font-size: 1rem;
+	background-color: rgb(0, 132, 255);
+	color: white;
+	font-weight: bold;
+	border-radius: 10px;
 }
 
 .wronganimation {

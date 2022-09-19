@@ -12,6 +12,7 @@ import {
 	getDoc,
 } from "@firebase/firestore";
 import { defineComponent } from "vue";
+import TextField from "./TextField.vue";
 </script>
 
 <template>
@@ -20,29 +21,28 @@ import { defineComponent } from "vue";
 			<div class="modal-wrapper">
 				<div class="modal-container">
 					<form @submit.prevent class="full-form">
-						<label>
-							<span>Name</span>
-							<input type="text" v-model="name" required />
-						</label>
+						<TextField
+							class="field-input"
+							label="name"
+							type="text"
+							:value="name"
+							@input="(e) => (name = e.target.value)"
+						/>
 						<div class="location-container">
-							<label>
-								<span>City</span>
-								<input
-									type="text"
-									v-model="city"
-									placeholder="Stockholm"
-									required
-								/>
-							</label>
-							<label>
-								<span>Country</span>
-								<input
-									type="text"
-									v-model="country"
-									placeholder="Sweden"
-									required
-								/>
-							</label>
+							<TextField
+								class="field-input"
+								label="city"
+								type="text"
+								:value="city"
+								@input="(e) => (city = e.target.value)"
+							/>
+							<TextField
+								class="field-input"
+								label="country"
+								type="text"
+								:value="country"
+								@input="(e) => (country = e.target.value)"
+							/>
 							<button class="location-btn" @click="getLocation">
 								Get My Location
 							</button>
@@ -75,11 +75,17 @@ import { defineComponent } from "vue";
 							</div>
 						</label>
 
-						<form @submit.prevent="handleStyleSubmit">
-							<label>
-								<span>Styles</span>
-								<input type="text" v-model="styleInput" />
-							</label>
+						<form
+							@submit.prevent="handleStyleSubmit"
+							class="sub-form"
+						>
+							<TextField
+								class="field-input"
+								label="styles"
+								type="text"
+								:value="styleInput"
+								@input="(e) => (styleInput = e.target.value)"
+							/>
 							<input type="submit" value="+" class="add-btn" />
 						</form>
 						<ul>
@@ -98,11 +104,19 @@ import { defineComponent } from "vue";
 							</li>
 						</ul>
 
-						<form @submit.prevent="handleInstrumentSubmit">
-							<label>
-								<span>Instruments</span>
-								<input type="text" v-model="instrumentInput" />
-							</label>
+						<form
+							@submit.prevent="handleInstrumentSubmit"
+							class="sub-form"
+						>
+							<TextField
+								class="field-input"
+								label="instruments"
+								type="text"
+								:value="instrumentInput"
+								@input="
+									(e) => (instrumentInput = e.target.value)
+								"
+							/>
 							<input type="submit" value="+" class="add-btn" />
 						</form>
 						<ul>
@@ -372,6 +386,10 @@ export default defineComponent({
 	gap: 0.5rem;
 }
 
+.field-input {
+	width: 14rem;
+}
+
 span {
 	display: block;
 }
@@ -379,11 +397,6 @@ span {
 .location-container {
 	display: flex;
 	align-items: flex-end;
-}
-
-.message {
-	color: red;
-	font-weight: bold;
 }
 
 .location-btn {
@@ -433,6 +446,11 @@ span {
 	transform: scale(1.1);
 }
 
+.sub-form {
+	display: flex;
+	align-items: flex-end;
+}
+
 ul {
 	width: fit-content;
 	list-style: none;
@@ -457,6 +475,7 @@ li:hover {
 	background-color: white;
 	font-size: 1rem;
 	border-radius: 5px;
+	height: 2rem;
 }
 
 .button-container {
