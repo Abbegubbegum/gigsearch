@@ -9,6 +9,15 @@ import {
 	signInWithPopup,
 } from "@firebase/auth";
 import TextField from "../components/TextField.vue";
+import { stringLength } from "@firebase/util";
+import {
+	collection,
+	doc,
+	GeoPoint,
+	getFirestore,
+	onSnapshot,
+	setDoc,
+} from "@firebase/firestore";
 </script>
 
 <template>
@@ -23,6 +32,8 @@ import TextField from "../components/TextField.vue";
 					type="email"
 					:value="email"
 					@input="(e) => (email = e.target.value)"
+					:error="emailError"
+					:error-message="emailErrorMessage"
 				/>
 
 				<TextField
@@ -30,6 +41,8 @@ import TextField from "../components/TextField.vue";
 					type="password"
 					:value="password"
 					@input="(e) => (password = e.target.value)"
+					:error="passwordError"
+					:error-message="passwordErrorMessage"
 				/>
 
 				<input type="submit" value="Login" class="submit-btn" />
@@ -53,11 +66,14 @@ export default defineComponent({
 	data() {
 		return {
 			email: "",
+			emailError: false,
+			emailErrorMessage: "",
 			password: "",
+			passwordError: false,
+			passwordErrorMessage: "",
 			users: [] as User[],
 			wrongAnimationTime: 500,
-			wrongEmail: false,
-			wrongPassword: false,
+			userIDs: [] as string[],
 		};
 	},
 	methods: {
@@ -70,31 +86,24 @@ export default defineComponent({
 				.catch((err) => {
 					switch (err.code) {
 						case "auth/invalid-email":
-							this.wrongEmail = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-							}, this.wrongAnimationTime);
+							this.emailError = true;
+							this.emailErrorMessage = "Not a valid email";
 							break;
 						case "auth/user-not-found":
-							this.wrongEmail = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-							}, this.wrongAnimationTime);
+							this.emailError = true;
+							this.emailErrorMessage =
+								"User with email not found";
 							break;
 						case "auth/wrong-password":
-							this.wrongPassword = true;
-							setTimeout(() => {
-								this.wrongPassword = false;
-							}, this.wrongAnimationTime);
+							this.passwordError = true;
+							this.passwordErrorMessage =
+								"Password does not match with email";
 							break;
 						default:
-							this.wrongEmail = true;
-							this.wrongPassword = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-								this.wrongPassword = false;
-							}, this.wrongAnimationTime);
-							break;
+							this.emailError = true;
+							this.emailErrorMessage = "";
+							this.passwordError = true;
+							this.passwordErrorMessage = "";
 					}
 				});
 		},
@@ -102,38 +111,28 @@ export default defineComponent({
 		googleSignIn() {
 			signInWithPopup(getAuth(), new GoogleAuthProvider())
 				.then((__data) => {
-					console.log("Logged in successfully");
-					router.push("/");
+					const user = getAuth().currentUser;
+					console.log(user);
+					console.log(this.userIDs);
+					if (this.userIDs.includes(user?.uid || "")) {
+						router.push("/profile/" + getAuth().currentUser?.uid);
+					} else if (user) {
+						return setDoc(doc(getFirestore(), "users", user.uid), {
+							likes: 0,
+							experienceRating: 0,
+							locationCoord: new GeoPoint(0, 0),
+							locationName: "",
+							instruments: [],
+							styles: [],
+							about: "",
+							name: user.displayName || "",
+							email: this.email,
+							likedUsers: [],
+						} as User);
+					}
 				})
 				.catch((err) => {
-					switch (err.code) {
-						case "auth/invalid-email":
-							this.wrongEmail = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-							}, this.wrongAnimationTime);
-							break;
-						case "auth/user-not-found":
-							this.wrongEmail = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-							}, this.wrongAnimationTime);
-							break;
-						case "auth/wrong-password":
-							this.wrongPassword = true;
-							setTimeout(() => {
-								this.wrongPassword = false;
-							}, this.wrongAnimationTime);
-							break;
-						default:
-							this.wrongEmail = true;
-							this.wrongPassword = true;
-							setTimeout(() => {
-								this.wrongEmail = false;
-								this.wrongPassword = false;
-							}, this.wrongAnimationTime);
-							break;
-					}
+					alert("Error Signing in with Google");
 				});
 		},
 	},
@@ -143,6 +142,17 @@ export default defineComponent({
 		if (authedUser) {
 			router.push("/profile/" + authedUser.uid);
 		}
+
+		onSnapshot(collection(getFirestore(), "users"), (snapshot) => {
+			let newUsers: string[] = [];
+			snapshot.forEach((userSnapshot) => {
+				let data = userSnapshot.data();
+				if (data) {
+					newUsers.push(userSnapshot.id);
+				}
+			});
+			this.userIDs = [...newUsers];
+		});
 	},
 });
 </script>

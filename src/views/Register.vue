@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from "@/router";
-import type { User } from "@/types";
+import type { User, UserWithID } from "@/types";
 import { defineComponent, getCurrentInstance } from "vue";
 import {
 	createUserWithEmailAndPassword,
@@ -9,7 +9,14 @@ import {
 	signInWithPopup,
 	updateProfile,
 } from "firebase/auth";
-import { getFirestore, setDoc, GeoPoint, doc } from "@firebase/firestore";
+import {
+	getFirestore,
+	setDoc,
+	GeoPoint,
+	doc,
+	collection,
+	onSnapshot,
+} from "@firebase/firestore";
 import TextField from "../components/TextField.vue";
 </script>
 
@@ -51,6 +58,7 @@ export default defineComponent({
 			name: "",
 			email: "",
 			password: "",
+			userIDs: [] as string[],
 		};
 	},
 	methods: {
@@ -58,7 +66,9 @@ export default defineComponent({
 			createUserWithEmailAndPassword(getAuth(), this.email, this.password)
 				.then((res) => {
 					const user = getAuth().currentUser;
-					if (user) {
+					if (this.userIDs.includes(user?.uid || "")) {
+						router.push("/profile/" + getAuth().currentUser?.uid);
+					} else if (user) {
 						updateProfile(user, { displayName: this.name });
 						return setDoc(doc(getFirestore(), "users", user.uid), {
 							likes: 0,
@@ -86,7 +96,9 @@ export default defineComponent({
 			signInWithPopup(getAuth(), new GoogleAuthProvider())
 				.then((res) => {
 					const user = getAuth().currentUser;
-					if (user) {
+					if (this.userIDs.includes(user?.uid || "")) {
+						router.push("/profile/" + getAuth().currentUser?.uid);
+					} else if (user) {
 						return setDoc(doc(getFirestore(), "users", user.uid), {
 							likes: 0,
 							experienceRating: 0,
@@ -95,7 +107,7 @@ export default defineComponent({
 							instruments: [],
 							styles: [],
 							about: "",
-							name: "",
+							name: user.displayName || "",
 							email: this.email,
 							likedUsers: [],
 						} as User);
@@ -105,9 +117,22 @@ export default defineComponent({
 					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
-					console.error(err);
+					alert("Error Signing in with Google");
 				});
 		},
+	},
+
+	created() {
+		onSnapshot(collection(getFirestore(), "users"), (snapshot) => {
+			let newUsers: string[] = [];
+			snapshot.forEach((userSnapshot) => {
+				let data = userSnapshot.data();
+				if (data) {
+					newUsers.push(userSnapshot.id);
+				}
+			});
+			this.userIDs = [...newUsers];
+		});
 	},
 });
 </script>

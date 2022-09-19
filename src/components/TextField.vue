@@ -7,6 +7,7 @@ import { capitalize, defineComponent } from "vue";
 		<input
 			:type="type"
 			class="input-field"
+			:class="{ error: error }"
 			:placeholder="label"
 			:name="label"
 			:id="label"
@@ -15,6 +16,9 @@ import { capitalize, defineComponent } from "vue";
 			@input="handleFieldInput"
 		/>
 		<label :for="label" class="input-label">{{ capitalize(label) }}</label>
+		<div class="error-message" :class="{ showMessage: error }">
+			{{ errorMessage }}
+		</div>
 	</div>
 </template>
 
@@ -42,6 +46,14 @@ export default defineComponent({
 			type: String,
 			required: true,
 		},
+		error: {
+			type: Boolean,
+			default: false,
+		},
+		errorMessage: {
+			type: String,
+			default: "fdsafs",
+		},
 	},
 	watch: {
 		value(to, from) {
@@ -56,7 +68,7 @@ export default defineComponent({
 	position: relative;
 	padding: 1rem 0 0;
 	margin-top: 0.7rem;
-	/* width: 100%; */
+	width: 100%;
 }
 
 .input-field {
@@ -68,7 +80,7 @@ export default defineComponent({
 	font-size: 1.3rem;
 	padding: 0.5rem 0;
 	background: transparent;
-	transition: border-color 0.2s;
+	transition: all 0.2s;
 }
 .input-field::placeholder {
 	color: transparent;
@@ -109,5 +121,22 @@ export default defineComponent({
 .input-field:required,
 .input-field:invalid {
 	box-shadow: none;
+}
+
+.error {
+	/* text-decoration: underline wavy red; */
+	color: red !important;
+	border-color: red !important;
+	border-image: none !important;
+}
+
+.error-message {
+	display: none;
+}
+
+.showMessage {
+	display: block;
+	color: red;
+	font-weight: bold;
 }
 </style>
