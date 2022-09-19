@@ -27,6 +27,8 @@ import TextField from "./TextField.vue";
 							type="text"
 							:value="name"
 							@input="(e) => (name = e.target.value)"
+							:error="nameError"
+							:error-message="nameErrorMessage"
 						/>
 						<div class="location-container">
 							<TextField
@@ -35,6 +37,8 @@ import TextField from "./TextField.vue";
 								type="text"
 								:value="city"
 								@input="(e) => (city = e.target.value)"
+								:error="cityError"
+								:error-message="cityErrorMessage"
 							/>
 							<TextField
 								class="field-input"
@@ -42,6 +46,8 @@ import TextField from "./TextField.vue";
 								type="text"
 								:value="country"
 								@input="(e) => (country = e.target.value)"
+								:error="countryError"
+								:error-message="countryErrorMessage"
 							/>
 							<button class="location-btn" @click="getLocation">
 								Get My Location
@@ -85,6 +91,8 @@ import TextField from "./TextField.vue";
 								type="text"
 								:value="styleInput"
 								@input="(e) => (styleInput = e.target.value)"
+								:error="styleError"
+								:error-message="styleErrorMessage"
 							/>
 							<input type="submit" value="+" class="add-btn" />
 						</form>
@@ -116,6 +124,8 @@ import TextField from "./TextField.vue";
 								@input="
 									(e) => (instrumentInput = e.target.value)
 								"
+								:error="instrumentError"
+								:error-message="instrumentErrorMessage"
 							/>
 							<input type="submit" value="+" class="add-btn" />
 						</form>
@@ -158,14 +168,24 @@ export default defineComponent({
 		return {
 			user: {} as User,
 			name: "",
+			nameError: false,
+			nameErrorMessage: "",
 			locationName: "",
 			locationCoords: {} as GeoPoint,
 			city: "",
+			cityError: false,
+			cityErrorMessage: "",
 			country: "",
+			countryError: false,
+			countryErrorMessage: "",
 			experienceRating: 0,
 			instrumentInput: "",
+			instrumentError: false,
+			instrumentErrorMessage: "",
 			instruments: [] as InstrumentWithID[],
 			styleInput: "",
+			styleError: false,
+			styleErrorMessage: "",
 			styles: [] as string[],
 			about: "",
 			allInstruments: [] as InstrumentWithID[],
@@ -176,6 +196,31 @@ export default defineComponent({
 	},
 	methods: {
 		async handleFullSubmit() {
+			if (this.instruments.length === 0) {
+				this.instrumentError = true;
+				this.instrumentErrorMessage =
+					"Add at least one instrument (ex. Guitar, Piano, Singer)";
+				return;
+			}
+
+			if (this.name.trim() === "") {
+				this.nameError = true;
+				this.nameErrorMessage = "Name cannot be blank";
+				return;
+			}
+
+			if (this.city.trim() === "") {
+				this.cityError = true;
+				this.cityErrorMessage = "City cannot be blank";
+				return;
+			}
+
+			if (this.country.trim() === "") {
+				this.countryError = true;
+				this.countryErrorMessage = "Country cannot be blank";
+				return;
+			}
+
 			let instrumentIdList = this.instruments.map(
 				(instrument) => instrument.id
 			);
@@ -183,17 +228,28 @@ export default defineComponent({
 			this.locationCoords = await encodeLocation(
 				`${this.city}%20${this.country}`
 			);
+
+			if (
+				this.locationCoords.latitude === 0 &&
+				this.locationCoords.longitude === 0
+			) {
+				alert("Location not found");
+				return;
+			}
+
+			// this.locationName = await decodeGeopoint(this.locationCoords);
+
 			this.locationName = `${this.city}, ${this.country}`;
 
 			let authuser = getAuth().currentUser;
 
 			if (authuser)
 				updateProfile(authuser, {
-					displayName: this.name,
+					displayName: this.name.replace(">", ""),
 				});
 
 			let user: User = {
-				name: this.name,
+				name: this.name.replace(">", ""),
 				email: "",
 				locationName: this.locationName,
 				locationCoord: this.locationCoords,
@@ -201,7 +257,7 @@ export default defineComponent({
 				instruments: instrumentIdList,
 				likes: 0,
 				experienceRating: this.experienceRating,
-				about: this.about,
+				about: this.about.trim().replace(">", ""),
 				likedUsers: [],
 			};
 
@@ -211,7 +267,8 @@ export default defineComponent({
 			this.styleInput = this.styleInput.trim();
 
 			if (this.styles.find((style) => style === this.styleInput)) {
-				console.log("Style already exists");
+				this.styleError = true;
+				this.styleErrorMessage = "Style already exists in list";
 				return;
 			}
 
@@ -229,7 +286,9 @@ export default defineComponent({
 						this.instrumentInput.toLowerCase()
 				)
 			) {
-				console.log("Instrument already exists");
+				this.instrumentError = true;
+				this.instrumentErrorMessage =
+					"Instrument already exists in list";
 				return;
 			}
 
@@ -242,7 +301,9 @@ export default defineComponent({
 			if (instrumentMatch) {
 				this.instruments.push(instrumentMatch);
 			} else {
-				console.log("Instrument not found in database");
+				this.instrumentError = true;
+				this.instrumentErrorMessage =
+					"Instrument not found in our database";
 				return;
 			}
 		},
@@ -301,6 +362,7 @@ export default defineComponent({
 		async getLocation() {
 			if (!navigator.geolocation) {
 				alert("Browser does not support geolocation");
+				return;
 			}
 
 			navigator.geolocation.getCurrentPosition(
@@ -347,6 +409,26 @@ export default defineComponent({
 			if (to === true) {
 				this.setValues();
 			}
+		},
+		styleInput(__to, __from) {
+			this.styleError = false;
+			this.styleErrorMessage = "";
+		},
+		instrumentInput(__to, __from) {
+			this.instrumentError = false;
+			this.instrumentErrorMessage = "";
+		},
+		name(__to, __from) {
+			this.nameError = false;
+			this.nameErrorMessage = "";
+		},
+		city(__to, __from) {
+			this.cityError = false;
+			this.cityErrorMessage = "";
+		},
+		country(__to, __from) {
+			this.countryError = false;
+			this.countryErrorMessage = "";
 		},
 	},
 });
@@ -396,7 +478,7 @@ span {
 
 .location-container {
 	display: flex;
-	align-items: flex-end;
+	align-items: flex-start;
 }
 
 .location-btn {
@@ -405,7 +487,7 @@ span {
 	color: white;
 	font-weight: bold;
 	padding: 0.2rem;
-	margin: 0 0.5rem;
+	margin: 2.5rem 0.5rem 0 0;
 }
 
 .tooltip {
@@ -448,7 +530,7 @@ span {
 
 .sub-form {
 	display: flex;
-	align-items: flex-end;
+	align-items: flex-start;
 }
 
 ul {
@@ -468,11 +550,15 @@ rmv-btn:hover,
 li:hover {
 	cursor: pointer;
 	text-decoration: line-through;
+	font-weight: bold;
 }
 
 .add-btn {
+	margin-top: 2.5rem;
 	margin-left: 1rem;
-	background-color: white;
+	background-color: rgb(11, 175, 5);
+	color: white;
+	font-weight: bold;
 	font-size: 1rem;
 	border-radius: 5px;
 	height: 2rem;

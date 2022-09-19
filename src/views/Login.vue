@@ -9,7 +9,6 @@ import {
 	signInWithPopup,
 } from "@firebase/auth";
 import TextField from "../components/TextField.vue";
-import { stringLength } from "@firebase/util";
 import {
 	collection,
 	doc,
@@ -80,10 +79,11 @@ export default defineComponent({
 		loginUser() {
 			signInWithEmailAndPassword(getAuth(), this.email, this.password)
 				.then((__data) => {
-					console.log("Logged in successfully");
-					router.push("/");
+					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
+					this.emailError = false;
+					this.passwordError = false;
 					switch (err.code) {
 						case "auth/invalid-email":
 							this.emailError = true;
@@ -114,8 +114,9 @@ export default defineComponent({
 					const user = getAuth().currentUser;
 					console.log(user);
 					console.log(this.userIDs);
+					console.log(user?.displayName);
 					if (this.userIDs.includes(user?.uid || "")) {
-						router.push("/profile/" + getAuth().currentUser?.uid);
+						router.push("/profile/" + user?.uid);
 					} else if (user) {
 						return setDoc(doc(getFirestore(), "users", user.uid), {
 							likes: 0,
@@ -126,13 +127,17 @@ export default defineComponent({
 							styles: [],
 							about: "",
 							name: user.displayName || "",
-							email: this.email,
+							email: user.email,
 							likedUsers: [],
 						} as User);
 					}
 				})
+				.then(() => {
+					router.push("/profile/" + getAuth().currentUser?.uid);
+				})
 				.catch((err) => {
 					alert("Error Signing in with Google");
+					console.error(err);
 				});
 		},
 	},
@@ -153,6 +158,21 @@ export default defineComponent({
 			});
 			this.userIDs = [...newUsers];
 		});
+	},
+
+	watch: {
+		email(to, from) {
+			this.passwordError = false;
+			this.passwordErrorMessage = "";
+			this.emailError = false;
+			this.emailErrorMessage = "";
+		},
+		password(to, from) {
+			this.emailError = false;
+			this.emailErrorMessage = "";
+			this.passwordError = false;
+			this.passwordErrorMessage = "";
+		},
 	},
 });
 </script>

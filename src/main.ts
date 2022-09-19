@@ -77,11 +77,16 @@ export async function encodeLocation(searchString: string): Promise<GeoPoint> {
 		},
 	});
 
+	if (res.data.status === "ZERO_RESULTS") {
+		return new GeoPoint(0, 0);
+	}
+
 	let result = res.data.results[0].geometry.location;
 
 	if (result?.lat && result?.lng) {
 		return new GeoPoint(result.lat, result.lng);
 	}
+
 	return new GeoPoint(0, 0);
 }
 

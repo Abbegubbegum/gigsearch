@@ -88,6 +88,7 @@ export default defineComponent({
 					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
+					alert("Failed to register user");
 					console.error(err);
 				});
 		},
@@ -108,7 +109,7 @@ export default defineComponent({
 							styles: [],
 							about: "",
 							name: user.displayName || "",
-							email: this.email,
+							email: user.email,
 							likedUsers: [],
 						} as User);
 					}
@@ -118,6 +119,7 @@ export default defineComponent({
 				})
 				.catch((err) => {
 					alert("Error Signing in with Google");
+					console.error(err);
 				});
 		},
 	},
