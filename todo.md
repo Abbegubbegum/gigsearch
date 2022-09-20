@@ -1,7 +1,7 @@
-[] Profile page
+[x] Profile page
 - [x] A Like button
 - [x] Better way to set your location
-[] Search page
+[x] Search page
 - [x] Better search for locations, and sort by closest
 [x] Login page
 - [x] Google sign-in
