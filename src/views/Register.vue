@@ -22,6 +22,13 @@ import TextField from "../components/TextField.vue";
 
 <template>
 	<div class="content-container">
+		<RouterLink to="/login" class="back-arrow">
+			<img
+				src="@/assets/arrow-icon.png"
+				alt="Left arrow icon"
+				style="height: 5rem"
+			/>
+		</RouterLink>
 		<form class="register-form" @submit.prevent="registerUser">
 			<h1>Register</h1>
 			<TextField
@@ -150,6 +157,15 @@ export default defineComponent({
 	justify-content: center;
 	align-items: center;
 }
+
+.back-arrow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin-top: 1rem;
+	margin-left: 2rem;
+}
+
 .register-form {
 	display: flex;
 	flex-direction: column;
