@@ -21,6 +21,7 @@ import { encodeLocation, getDistance } from "@/main";
 		<div
 			class="searchbar-wrapper"
 			:class="{ initialSearch: initialSearch }"
+			v-if="loaded"
 		>
 			<SearchBar
 				@on-submit="setSearch"
@@ -36,6 +37,14 @@ import { encodeLocation, getDistance } from "@/main";
 				class="sort-dropdown fadeTransition"
 				:class="{ hide: initialSearch }"
 			/>
+		</div>
+		<div v-else class="loading-wrapper">
+			<div class="lds-ring">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
 		</div>
 		<aside class="fadeTransition" :class="{ hide: initialSearch }">
 			<FilterSection
@@ -84,6 +93,7 @@ export default defineComponent({
 			currentSort: "",
 			users: [] as UserWithID[],
 			instruments: [] as InstrumentWithID[],
+			loaded: false,
 		};
 	},
 	methods: {
@@ -260,26 +270,44 @@ export default defineComponent({
 		},
 
 		handleChangedFilter(newFilter: FilterOptions) {
-			console.log("changed filter");
 			this.currentFilter = newFilter;
 			this.applyFilter();
 			this.sortUsers();
 		},
 
 		handleChangedSort(newSort: string) {
-			console.log("changed sort");
-
 			this.currentSort = newSort;
 			this.sortUsers();
 		},
 	},
-	async mounted() {
+	async created() {
+		let snapshot = await getDocs(collection(getFirestore(), "users"));
+
+		snapshot.forEach((userSnapshot) => {
+			let data = userSnapshot.data();
+			if (data) {
+				this.users.push({
+					id: userSnapshot.id,
+					name: data.name,
+					email: data.email,
+					likes: data.likes,
+					experienceRating: data.experienceRating,
+					locationName: data.locationName,
+					locationCoord: data.locationCoord,
+					instruments: data.instruments,
+					styles: data.styles,
+					about: data.about,
+					likedUsers: data.likedUsers,
+				});
+			}
+		});
+
 		onSnapshot(collection(getFirestore(), "users"), (snapshot) => {
-			let newUsers: UserWithID[] = [];
+			this.users = [];
 			snapshot.forEach((userSnapshot) => {
 				let data = userSnapshot.data();
 				if (data) {
-					newUsers.push({
+					this.users.push({
 						id: userSnapshot.id,
 						name: data.name,
 						email: data.email,
@@ -294,7 +322,6 @@ export default defineComponent({
 					});
 				}
 			});
-			this.users = [...newUsers];
 		});
 
 		getDocs(collection(getFirestore(), "instruments")).then((snapshot) => {
@@ -308,9 +335,9 @@ export default defineComponent({
 				});
 			});
 			this.instruments = [...newInstruments];
+			this.loaded = true;
+			this.handleParams();
 		});
-
-		this.handleParams();
 	},
 	watch: {
 		$route(to, from) {
@@ -355,7 +382,7 @@ export default defineComponent({
 	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-rows: 17vh auto 1fr;
+	grid-template-rows: 25vh auto 1fr;
 }
 
 aside {
@@ -374,6 +401,52 @@ main {
 .sort-dropdown {
 	align-self: center;
 	margin-top: 1rem;
+}
+
+.loading-wrapper {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.lds-ring {
+	display: inline-block;
+	position: relative;
+	width: 80px;
+	height: 80px;
+}
+.lds-ring div {
+	box-sizing: border-box;
+	display: block;
+	position: absolute;
+	width: 64px;
+	height: 64px;
+	margin: 8px;
+	border: 8px solid gray;
+	border-radius: 50%;
+	animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+	border-color: gray transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+	animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+	animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+	animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 @media only screen and (min-width: 900px) {

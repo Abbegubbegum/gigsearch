@@ -413,7 +413,7 @@ ul {
 }
 
 .like-btn:hover {
-	background-color: gray;
+	background-color: rgb(190, 188, 188);
 }
 
 .disabled:hover {
@@ -424,5 +424,9 @@ ul {
 .liked {
 	background-color: rgb(0, 132, 255);
 	color: white;
+}
+
+.liked:hover {
+	background-color: rgb(0, 157, 255);
 }
 </style>

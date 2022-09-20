@@ -55,7 +55,7 @@ import {
 			class="register-btn"
 			@click="$router.push('/register')"
 		>
-			Register
+			Register Account
 		</button>
 	</div>
 </template>
@@ -189,8 +189,9 @@ export default defineComponent({
 .login-box {
 	padding: 1rem;
 	border: 1px solid gray;
-	box-shadow: 1px 1px 2px gray;
+	box-shadow: 10px 10px 20px gray;
 	width: clamp(20rem, 40%, 40rem);
+	border-radius: 20px;
 }
 
 .login-header {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
-import type { User, UserWithID } from "@/types";
-import { defineComponent, getCurrentInstance } from "vue";
+import type { User } from "@/types";
+import { defineComponent } from "vue";
 import {
 	createUserWithEmailAndPassword,
 	getAuth,
@@ -23,11 +23,13 @@ import TextField from "../components/TextField.vue";
 <template>
 	<div class="content-container">
 		<form class="register-form" @submit.prevent="registerUser">
+			<h1>Register</h1>
 			<TextField
 				label="name"
 				type="text"
 				:value="name"
 				@input="(e) => (name = e.target.value)"
+				class="text-field"
 			/>
 
 			<TextField
@@ -35,6 +37,7 @@ import TextField from "../components/TextField.vue";
 				type="email"
 				:value="email"
 				@input="(e) => (email = e.target.value)"
+				class="text-field"
 			/>
 
 			<TextField
@@ -42,6 +45,7 @@ import TextField from "../components/TextField.vue";
 				type="password"
 				:value="password"
 				@input="(e) => (password = e.target.value)"
+				class="text-field"
 			/>
 			<input type="submit" value="Register" />
 			<button type="button" class="google-btn" @click="googleSignIn">
@@ -147,21 +151,15 @@ export default defineComponent({
 	align-items: center;
 }
 .register-form {
-	display: grid;
-	grid-auto-flow: row;
-	align-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	gap: 1rem;
 	border: 1px solid gray;
 	padding: 1rem;
-	box-shadow: 1px 1px 2px gray;
+	box-shadow: 10px 10px 20px gray;
 	width: clamp(20rem, 40%, 40rem);
-}
-
-label {
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	gap: 0.5rem;
+	border-radius: 20px;
 }
 
 input[type="submit"] {
@@ -171,6 +169,7 @@ input[type="submit"] {
 	background-color: green;
 	border: none;
 	color: white;
+	width: 100%;
 }
 
 .google-btn {
