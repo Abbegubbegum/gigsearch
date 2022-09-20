@@ -45,6 +45,8 @@ import TextField from "../components/TextField.vue";
 				:value="email"
 				@input="(e) => (email = e.target.value)"
 				class="text-field"
+				:error="emailError"
+				:error-message="emailErrorMessage"
 			/>
 
 			<TextField
@@ -53,6 +55,8 @@ import TextField from "../components/TextField.vue";
 				:value="password"
 				@input="(e) => (password = e.target.value)"
 				class="text-field"
+				:error="passwordError"
+				:error-message="passwordErrorMessage"
 			/>
 			<input type="submit" value="Register" />
 			<button type="button" class="google-btn" @click="googleSignIn">
@@ -68,7 +72,11 @@ export default defineComponent({
 		return {
 			name: "",
 			email: "",
+			emailError: false,
+			emailErrorMessage: "",
 			password: "",
+			passwordError: false,
+			passwordErrorMessage: "",
 			userIDs: [] as string[],
 		};
 	},
@@ -99,8 +107,21 @@ export default defineComponent({
 					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
-					alert("Failed to register user");
-					console.error(err);
+					switch (err.code) {
+						case "auth/weak-password":
+							this.passwordError = true;
+							this.passwordErrorMessage =
+								"Password needs to be atleast 6 characters long";
+							break;
+						case "auth/email-already-in-use":
+							this.emailError = true;
+							this.emailErrorMessage = "Email already in use";
+							break;
+
+						default:
+							alert("Failed to register user " + err.code);
+							break;
+					}
 				});
 		},
 
@@ -129,7 +150,7 @@ export default defineComponent({
 					router.push("/profile/" + getAuth().currentUser?.uid);
 				})
 				.catch((err) => {
-					alert("Error Signing in with Google");
+					alert("Error Signing in with Google " + err.code);
 					console.error(err);
 				});
 		},
@@ -146,6 +167,17 @@ export default defineComponent({
 			});
 			this.userIDs = [...newUsers];
 		});
+	},
+
+	watch: {
+		password(__to, __from) {
+			this.passwordError = false;
+			this.passwordErrorMessage = "";
+		},
+		email(__to, __from) {
+			this.emailError = false;
+			this.emailErrorMessage = "";
+		},
 	},
 });
 </script>
