@@ -382,7 +382,12 @@ export default defineComponent({
 	height: 100%;
 	width: 100%;
 	display: grid;
-	grid-template-rows: 25vh auto 1fr;
+	grid-template-rows: 13rem 1fr;
+}
+
+aside,
+main {
+	margin-top: 1rem;
 }
 
 aside {

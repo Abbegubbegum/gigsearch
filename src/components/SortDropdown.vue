@@ -87,6 +87,7 @@ input {
 	height: 100%;
 	width: 5rem;
 	border: none;
+	background-color: transparent;
 }
 
 .dropdown-content {

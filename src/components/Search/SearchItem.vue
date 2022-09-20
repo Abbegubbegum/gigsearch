@@ -127,7 +127,7 @@ export default defineComponent({
 	border: 1px solid gray;
 	min-height: 20rem;
 	max-height: 30rem;
-	width: clamp(30rem, 100%, 70rem);
+	width: clamp(30rem, 100%, 45rem);
 	display: grid;
 	grid-template-rows: auto 1fr;
 	transition: all 0.2s ease;

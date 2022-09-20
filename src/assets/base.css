@@ -72,6 +72,6 @@ body {
 
 @media only screen and (max-width: 630px) {
 	html {
-		font-size: calc(0.3rem + 1vw);
+		font-size: calc(0.4rem + 1.2vw);
 	}
 }
