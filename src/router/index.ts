@@ -4,6 +4,7 @@ import Search from "../views/Search.vue";
 import Profile from "../views/Profile.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
+import Messages from "@/views/Messages.vue";
 import Missing404 from "../views/404.vue";
 
 const router = createRouter({
@@ -37,6 +38,11 @@ const router = createRouter({
 			path: "/register",
 			name: "Register",
 			component: Register,
+		},
+		{
+			path: "/messages",
+			name: "Messages",
+			component: Messages
 		},
 		{
 			path: "/:pathMatch(.*)*",

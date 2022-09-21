@@ -141,6 +141,7 @@ export default defineComponent({
 				experienceRating: this.user.experienceRating,
 				likes: this.user.likes,
 				likedUsers: this.user.likedUsers,
+				conversations: this.user.conversations,
 			};
 
 			setDoc(this.userRef, updateUser);
@@ -207,24 +208,29 @@ export default defineComponent({
 		},
 	},
 	async created() {
+		// Create reference to user
 		this.userRef = doc(
 			getFirestore(),
 			"users",
 			this.$route.params.uid.toString()
 		);
 
+		//Get first data
 		let userSnapshot = await getDoc(this.userRef).catch((err) => {
 			console.error(err);
 			router.push("/");
 			return;
 		});
 
+		//If no user exists, redirect to 404
 		if (!userSnapshot || !userSnapshot.exists()) {
 			router.push("/404");
 			return;
 		}
 
 		let data = userSnapshot.data();
+
+		//Populate user field from data
 		if (data) {
 			this.user = {
 				id: userSnapshot.id,
@@ -238,15 +244,22 @@ export default defineComponent({
 				styles: data.styles,
 				about: data.about,
 				likedUsers: data.likedUsers,
+				conversations: data.conversations,
 			};
 		}
 
+		// Get authed user
 		let currentUser = getAuth().currentUser;
 
-		if (currentUser?.uid === userSnapshot.id) {
+		//Set authedUser field accordingly
+		if (currentUser?.uid === this.user.id) {
 			this.authedUser = true;
+			if (this.user.instruments.length === 0) {
+				this.showPopup();
+			}
 		}
 
+		//Get the authed users liked list and set the like button state accordingly
 		if (currentUser) {
 			let currentUserSnapshot = await getDoc(
 				doc(getFirestore(), "users", currentUser.uid)
@@ -267,6 +280,7 @@ export default defineComponent({
 
 		onSnapshot(this.userRef, (snapshot) => {
 			let data = snapshot.data();
+
 			if (data) {
 				this.user = {
 					id: snapshot.id,
@@ -279,7 +293,8 @@ export default defineComponent({
 					instruments: data.instruments,
 					styles: data.styles,
 					about: data.about,
-					likedUsers: [],
+					likedUsers: data.likedUsers,
+					conversations: data.conversations,
 				};
 			}
 		});
@@ -294,10 +309,11 @@ export default defineComponent({
 					id: doc.id,
 				});
 			});
+
 			this.instruments = [...newInstruments];
 		});
 
-		const unsubAuth = onAuthStateChanged(getAuth(), (authedUser) => {
+		onAuthStateChanged(getAuth(), (authedUser) => {
 			if (authedUser?.uid === this.user.id) {
 				this.authedUser = true;
 				return;

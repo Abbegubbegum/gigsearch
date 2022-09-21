@@ -129,6 +129,7 @@ export default defineComponent({
 							name: user.displayName || "",
 							email: user.email,
 							likedUsers: [],
+							conversations: [],
 						} as User);
 					}
 				})

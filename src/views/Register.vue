@@ -100,6 +100,7 @@ export default defineComponent({
 							name: this.name,
 							email: this.email,
 							likedUsers: [],
+							conversations: [],
 						} as User);
 					}
 				})
@@ -143,6 +144,7 @@ export default defineComponent({
 							name: user.displayName || "",
 							email: user.email,
 							likedUsers: [],
+							conversations: [],
 						} as User);
 					}
 				})

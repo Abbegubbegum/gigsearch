@@ -26,6 +26,9 @@ import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
 					>
 						Profile
 					</RouterLink>
+					<RouterLink to="/messages" class="dropdown-item">
+						Messages
+					</RouterLink>
 					<button type="button" class="dropdown-item" @click="logout">
 						Logout
 					</button>
@@ -35,6 +38,7 @@ import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
 		<div>
 			<RouterView />
 		</div>
+		<MessageService v-if="authed" />
 	</div>
 </template>
 
@@ -144,6 +148,8 @@ header > * {
 .push-right {
 	margin-left: auto;
 	border-left: 1px solid rgb(236, 236, 236);
+	text-align: center;
+	min-width: 9rem;
 }
 
 .dropdown-content {

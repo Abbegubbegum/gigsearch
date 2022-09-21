@@ -229,6 +229,8 @@ export default defineComponent({
 				`${this.city}%20${this.country}`
 			);
 
+			console.log(this.locationCoords);
+
 			if (
 				this.locationCoords.latitude === 0 &&
 				this.locationCoords.longitude === 0
@@ -259,6 +261,7 @@ export default defineComponent({
 				experienceRating: this.experienceRating,
 				about: this.about.trim().replace(">", ""),
 				likedUsers: [],
+				conversations: [],
 			};
 
 			this.$emit("edit", user);
@@ -396,6 +399,7 @@ export default defineComponent({
 				});
 			});
 			this.allInstruments = [...newInstruments];
+			this.setValues();
 		});
 
 		window.onmousemove = this.updateTooltipPosition;
