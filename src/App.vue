@@ -38,7 +38,6 @@ import { getAuth, signOut, onAuthStateChanged } from "@firebase/auth";
 		<div>
 			<RouterView />
 		</div>
-		<MessageService v-if="authed" />
 	</div>
 </template>
 

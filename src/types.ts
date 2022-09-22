@@ -37,8 +37,18 @@ export interface Conversation {
 	messages: Message[];
 }
 
+export interface ConversationWithNames extends Conversation {
+	id: string;
+	memberNames: string[];
+	messages: MessageWithName[];
+}
+
 export interface Message {
 	sender: string;
 	text: string;
 	timestamp: Timestamp;
+}
+
+export interface MessageWithName extends Message {
+	senderName: string;
 }

@@ -190,8 +190,8 @@ export default defineComponent({
 			about: "",
 			allInstruments: [] as InstrumentWithID[],
 			showTooltip: false,
-			tooltipTop: "0",
-			tooltipLeft: "0",
+			tooltipTop: "15px",
+			tooltipLeft: "25%",
 		};
 	},
 	methods: {
@@ -359,6 +359,8 @@ export default defineComponent({
 		},
 
 		updateTooltipPosition(e: any) {
+			if (this.getBrowser() !== "Firefox") return;
+
 			this.tooltipTop = (e.layerY - 5).toString() + "px";
 			this.tooltipLeft = (e.layerX - 16).toString() + "px";
 		},
@@ -385,6 +387,27 @@ export default defineComponent({
 					alert("Failed to get current position: " + err.message);
 				}
 			);
+		},
+		getBrowser(): string {
+			const agent = navigator.userAgent.toLowerCase();
+			switch (true) {
+				case agent.indexOf("edge") > -1:
+					return "MS Edge";
+				case agent.indexOf("edg/") > -1:
+					return "Edge";
+				case agent.indexOf("opr") > -1:
+					return "Opera";
+				case agent.indexOf("chrome") > -1:
+					return "Chrome";
+				case agent.indexOf("trident") > -1:
+					return "MS IE";
+				case agent.indexOf("firefox") > -1:
+					return "Firefox";
+				case agent.indexOf("safari") > -1:
+					return "Safari";
+				default:
+					return "other";
+			}
 		},
 	},
 	created() {
