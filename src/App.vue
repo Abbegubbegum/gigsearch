@@ -140,7 +140,7 @@ header > * {
 	padding: 0.5rem;
 }
 .logo-color {
-	color: rgb(125, 211, 40);
+	color: rgb(24, 191, 43);
 	font-weight: bolder;
 }
 
