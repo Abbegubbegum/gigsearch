@@ -1,4 +1,9 @@
-import type { GeoPoint, Timestamp } from "@firebase/firestore";
+import type {
+	CollectionReference,
+	DocumentData,
+	GeoPoint,
+	Timestamp,
+} from "@firebase/firestore";
 
 export interface User {
 	name: string;
@@ -11,7 +16,6 @@ export interface User {
 	styles: string[];
 	about: string;
 	likedUsers: string[];
-	conversations: string[];
 }
 
 export interface UserWithID extends User {
@@ -34,13 +38,12 @@ export interface FilterOptions {
 
 export interface Conversation {
 	members: string[];
-	messages: Message[];
 }
 
 export interface ConversationWithNames extends Conversation {
 	id: string;
 	memberNames: string[];
-	messages: MessageWithName[];
+	messageRef: CollectionReference<DocumentData>;
 }
 
 export interface Message {

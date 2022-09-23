@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import router from "@/router";
 import { defineComponent, capitalize } from "vue";
-import type { Instrument, InstrumentWithID, User, UserWithID } from "@/types";
+import type {
+	Conversation,
+	Instrument,
+	InstrumentWithID,
+	User,
+	UserWithID,
+} from "@/types";
 import EditPopup from "../components/EditPopup.vue";
 import {
 	collection,
@@ -13,6 +19,9 @@ import {
 	type DocumentData,
 	setDoc,
 	getDocs,
+	addDoc,
+	query,
+	where,
 } from "@firebase/firestore";
 import { getAuth, onAuthStateChanged } from "@firebase/auth";
 </script>
@@ -91,6 +100,14 @@ import { getAuth, onAuthStateChanged } from "@firebase/auth";
 				>
 					{{ user.likes }} 👍
 				</button>
+				<button
+					type="button"
+					class="message-btn"
+					:class="{ disabled: authedUser }"
+					@click="onMessageButton"
+				>
+					Message
+				</button>
 			</footer>
 		</div>
 		<EditPopup
@@ -141,7 +158,6 @@ export default defineComponent({
 				experienceRating: this.user.experienceRating,
 				likes: this.user.likes,
 				likedUsers: this.user.likedUsers,
-				conversations: this.user.conversations,
 			};
 
 			setDoc(this.userRef, updateUser);
@@ -206,6 +222,33 @@ export default defineComponent({
 				{ merge: true }
 			);
 		},
+		async onMessageButton() {
+			let currentUser = getAuth().currentUser;
+
+			if (!currentUser || this.authedUser) return;
+
+			let q = query(
+				collection(getFirestore(), "conversations"),
+				where("members", "array-contains", currentUser.uid)
+			);
+
+			let snapshot = await getDocs(q);
+
+			snapshot.forEach((convo) => {
+				if ((convo.data().members as string[]).includes(this.user.id)) {
+					router.push("/messages");
+					return;
+				}
+			});
+
+			let conversation = {
+				members: [this.user.id, currentUser.uid],
+			} as Conversation;
+
+			addDoc(collection(getFirestore(), "conversations"), conversation);
+
+			router.push("/messages");
+		},
 	},
 	async created() {
 		// Create reference to user
@@ -244,7 +287,6 @@ export default defineComponent({
 				styles: data.styles,
 				about: data.about,
 				likedUsers: data.likedUsers,
-				conversations: data.conversations,
 			};
 		}
 
@@ -294,7 +336,6 @@ export default defineComponent({
 					styles: data.styles,
 					about: data.about,
 					likedUsers: data.likedUsers,
-					conversations: data.conversations,
 				};
 			}
 		});
@@ -404,6 +445,7 @@ ul {
 	gap: 2rem;
 }
 
+.message-btn,
 .edit-btn {
 	background-color: rgb(0, 140, 255);
 	color: white;
@@ -412,6 +454,7 @@ ul {
 	font-weight: bold;
 }
 
+.message-btn,
 .edit-btn:hover {
 	background-color: rgb(0, 118, 214);
 }
@@ -437,6 +480,10 @@ ul {
 	background-color: lightgray;
 }
 
+.message-btn.disabled {
+	background-color: rgb(0, 140, 255);
+}
+
 .liked {
 	background-color: rgb(0, 132, 255);
 	color: white;
@@ -444,5 +491,9 @@ ul {
 
 .liked:hover {
 	background-color: rgb(0, 157, 255);
+}
+
+.message-btn {
+	margin: 1rem;
 }
 </style>

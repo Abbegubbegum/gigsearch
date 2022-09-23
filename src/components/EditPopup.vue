@@ -261,7 +261,6 @@ export default defineComponent({
 				experienceRating: this.experienceRating,
 				about: this.about.trim().replace(">", ""),
 				likedUsers: [],
-				conversations: [],
 			};
 
 			this.$emit("edit", user);

@@ -298,7 +298,6 @@ export default defineComponent({
 					styles: data.styles,
 					about: data.about,
 					likedUsers: data.likedUsers,
-					conversations: data.conversations,
 				});
 			}
 		});
@@ -320,7 +319,6 @@ export default defineComponent({
 						styles: data.styles,
 						about: data.about,
 						likedUsers: data.likedUsers,
-						conversations: data.conversations,
 					});
 				}
 			});

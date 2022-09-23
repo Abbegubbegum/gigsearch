@@ -11,6 +11,7 @@ import { getAuth } from "@firebase/auth";
 import {
 	addDoc,
 	collection,
+	CollectionReference,
 	doc,
 	getDoc,
 	getDocs,
@@ -22,6 +23,7 @@ import {
 	where,
 } from "@firebase/firestore";
 import { defineComponent } from "vue";
+import MessageFeed from "../components/Messaging/MessageFeed.vue";
 </script>
 
 <template>
@@ -38,44 +40,16 @@ import { defineComponent } from "vue";
 							selected:
 								conversation.id === selectedConversation.id,
 						}"
+						@click="selectedConversation = conversation"
 						v-for="conversation in conversations"
 					>
 						{{ conversation.memberNames.join(", ") }}
 					</div>
 				</aside>
 				<div class="message-feed">
-					<div
-						class="message"
-						v-for="message in selectedConversation.messages"
-					>
-						<span>
-							<div class="message-timestamp">
-								{{
-									message.timestamp
-										.toDate()
-										.toLocaleDateString(undefined, {
-											month: "numeric",
-											day: "numeric",
-											weekday: "short",
-											hour: "2-digit",
-											minute: "2-digit",
-											second: "2-digit",
-										})
-								}}
-							</div>
-							<span class="message-sender">{{
-								message.senderName
-							}}</span>
-						</span>
-						<span class="message-text">{{ message.text }}</span>
-					</div>
-					<form @submit.prevent="sendMessage">
-						<input
-							type="text"
-							class="message-input"
-							v-model="messageInput"
-						/>
-					</form>
+					<MessageFeed
+						:message-ref="selectedConversation.messageRef"
+					/>
 				</div>
 			</main>
 		</div>
@@ -117,28 +91,6 @@ export default defineComponent({
 			console.log("Didn't find user with ID: " + uid);
 			return "";
 		},
-		sendMessage() {
-			if (this.messageInput.trim().length === 0) return;
-
-			let user = getAuth().currentUser;
-			if (!user) return;
-
-			let message = {
-				sender: user.uid,
-				text: this.messageInput.trim(),
-				timestamp: Timestamp.now(),
-			};
-
-			addDoc(
-				collection(
-					getFirestore(),
-					"conversations",
-					this.selectedConversation.id,
-					"messages"
-				),
-				message
-			);
-		},
 	},
 	async created() {
 		let currentUser = getAuth().currentUser;
@@ -156,27 +108,6 @@ export default defineComponent({
 		let conversations = await getDocs(q);
 
 		conversations.forEach(async (conversation) => {
-			let messageQuery = query(
-				collection(
-					getFirestore(),
-					"conversations",
-					conversation.id,
-					"messages"
-				),
-				orderBy("timestamp", "asc")
-			);
-			let messagesSnapshot = await getDocs(messageQuery);
-
-			let messages = [] as MessageWithName[];
-			messagesSnapshot.forEach((message) => {
-				messages.push({
-					sender: message.data().sender,
-					text: message.data().text,
-					timestamp: message.data().timestamp,
-					senderName: "",
-				});
-			});
-
 			let members = conversation.data().members as string[];
 			let memberNames: string[] = [];
 
@@ -184,13 +115,14 @@ export default defineComponent({
 				memberNames.push(await this.getNameFromID(memberID));
 			}
 
-			for (const message of messages) {
-				message.senderName = await this.getNameFromID(message.sender);
-			}
-
 			this.conversations.push({
 				members: members,
-				messages: [...messages],
+				messageRef: collection(
+					getFirestore(),
+					"conversations",
+					conversation.id,
+					"messages"
+				),
 				memberNames: [...memberNames],
 				id: conversation.id,
 			});
@@ -204,27 +136,6 @@ export default defineComponent({
 			if (this.conversations.length === 0) return;
 			this.conversations = [];
 			conversations.forEach(async (conversation) => {
-				let messageQuery = query(
-					collection(
-						getFirestore(),
-						"conversations",
-						conversation.id,
-						"messages"
-					),
-					orderBy("timestamp", "asc")
-				);
-				let messagesSnapshot = await getDocs(messageQuery);
-
-				let messages = [] as MessageWithName[];
-				messagesSnapshot.forEach((message) => {
-					messages.push({
-						sender: message.data().sender,
-						text: message.data().text,
-						timestamp: message.data().timestamp,
-						senderName: "",
-					});
-				});
-
 				let members = conversation.data().members as string[];
 				let memberNames: string[] = [];
 
@@ -232,22 +143,26 @@ export default defineComponent({
 					memberNames.push(await this.getNameFromID(memberID));
 				}
 
-				for (const message of messages) {
-					message.senderName = await this.getNameFromID(
-						message.sender
-					);
-				}
-
 				this.conversations.push({
 					members: members,
-					messages: [...messages],
+					messageRef: collection(
+						getFirestore(),
+						"conversations",
+						conversation.id,
+						"messages"
+					),
 					memberNames: [...memberNames],
 					id: conversation.id,
 				});
 				if (conversation.id === this.selectedConversation.id) {
 					this.selectedConversation = {
 						members: members,
-						messages: [...messages],
+						messageRef: collection(
+							getFirestore(),
+							"conversations",
+							conversation.id,
+							"messages"
+						),
 						memberNames: [...memberNames],
 						id: conversation.id,
 					};
@@ -297,10 +212,16 @@ aside {
 
 .conversation-label:hover {
 	background-color: rgb(224, 223, 223);
+	cursor: pointer;
 }
 
 .selected {
 	background-color: white;
+}
+
+.selected:hover {
+	background-color: white;
+	cursor: default;
 }
 
 .message-feed {
@@ -309,27 +230,5 @@ aside {
 	justify-content: flex-end;
 	overflow: hidden;
 	height: 100%;
-}
-
-.message {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-top: solid 1px gray;
-	border-bottom: solid 1px gray;
-	padding: 0.5rem;
-}
-
-.message-text {
-	margin-left: auto;
-}
-
-.message-input {
-	width: 100%;
-	font-size: 1.5rem;
-}
-
-.message-input:focus {
-	outline: none;
 }
 </style>
