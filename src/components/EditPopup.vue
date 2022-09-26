@@ -474,9 +474,12 @@ export default defineComponent({
 
 .modal-wrapper {
 	position: fixed;
-	top: 50%;
+	margin: auto auto;
+	top: 0;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, 0);
+	height: 100%;
+	overflow-y: scroll;
 }
 
 .modal-container {
