@@ -231,6 +231,7 @@ export default defineComponent({
 
 			if (this.currentSort === "likes") {
 				this.filteredUsers.sort((a, b): number => {
+					console.log(b.likes - a.likes);
 					return b.likes - a.likes;
 				});
 			} else if (this.currentSort === "level") {
@@ -239,13 +240,23 @@ export default defineComponent({
 				});
 			}
 
-			//Sort by closest to search location
-			this.filteredUsers.sort((a, b): number => {
-				return (
-					getDistance(a.locationCoord, this.searchedGeopoint) -
-					getDistance(b.locationCoord, this.searchedGeopoint)
-				);
-			});
+			if (this.currentSort === "location") {
+				this.filteredUsers.sort((a, b): number => {
+					return (
+						getDistance(a.locationCoord, this.searchedGeopoint) -
+						getDistance(b.locationCoord, this.searchedGeopoint)
+					);
+				});
+			} else {
+				//Sort by closest to search location
+				this.filteredUsers.sort((a, b): number => {
+					let diff =
+						getDistance(a.locationCoord, this.searchedGeopoint) -
+						getDistance(b.locationCoord, this.searchedGeopoint);
+					if (Math.abs(diff) < 1000) return 0;
+					return diff;
+				});
+			}
 		},
 
 		//Handle the params

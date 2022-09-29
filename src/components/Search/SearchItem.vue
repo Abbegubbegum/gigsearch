@@ -27,8 +27,8 @@ import {
 				<div class="experience-container">
 					Level:
 					<StarRating
-						:rating="parseInt(user.experienceRating.toString())"
-						:increment="0.01"
+						:rating="user.experienceRating"
+						:increment="0.5"
 						:read-only="true"
 						:show-rating="false"
 						:star-size="30"

@@ -32,7 +32,7 @@ export default defineComponent({
 		return {
 			searchFilter: "",
 			selectedOption: "",
-			options: ["likes", "level"],
+			options: ["likes", "level", "location"],
 			optionsShow: false,
 			defaultOptionIndex: 0,
 		};
@@ -85,7 +85,7 @@ label {
 input {
 	font-size: 1.3rem;
 	height: 100%;
-	width: 5rem;
+	width: 6rem;
 	border: none;
 	background-color: transparent;
 }
